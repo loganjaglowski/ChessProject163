@@ -10,6 +10,7 @@ public class ChessModel implements IChessModel {
         board = new IChessPiece[8][8];
         player = Player.WHITE;
 
+        /** Set white pieces */
         board[7][0] = new Rook(Player.WHITE);
         board[7][1] = new Knight(Player.WHITE);
         board[7][2] = new Bishop(Player.WHITE);
@@ -27,13 +28,14 @@ public class ChessModel implements IChessModel {
         board[6][6] = new Pawn(Player.WHITE);
         board[6][7] = new Pawn(Player.WHITE);
 
+        /** Set black pieces */
         board[0][0] = new Rook(Player.BLACK);
         board[0][1] = new Knight(Player.BLACK);
         board[0][2] = new Bishop(Player.BLACK);
         board[0][3] = new Queen(Player.BLACK);
         board[0][4] = new King(Player.BLACK);
         board[0][5] = new Bishop(Player.BLACK);
-        board[0][6] = new Knight (Player.BLACK);
+        board[0][6] = new Knight(Player.BLACK);
         board[0][7] = new Rook(Player.BLACK);
         board[1][0] = new Pawn(Player.BLACK);
         board[1][1] = new Pawn(Player.BLACK);
@@ -46,7 +48,11 @@ public class ChessModel implements IChessModel {
 
     }
 
-    public boolean isComplete() {
+    /******************************************************************
+     * A method that returns whether the game is complete or not.
+     * @return true if complete, false if incomplete.
+     *****************************************************************/
+    public boolean isComplete() { //fixme: finish logic
         boolean valid = false;
         return valid;
     }
@@ -54,10 +60,10 @@ public class ChessModel implements IChessModel {
     public boolean isValidMove(Move move) {
         boolean valid = false;
 
-        if (board[move.fromRow][move.fromColumn] != null)
-            if (board[move.fromRow][move.fromColumn].isValidMove(move, board) == true)
+        if (board[move.fromRow][move.fromColumn] != null) //ensures user didn't click empty square
+            if (board[move.fromRow][move.fromColumn].isValidMove(move, board))
                 if((board[move.fromRow][move.fromColumn]).player() != currentPlayer().next())
-                    return true;
+                    valid = true;
 
         return valid;
     }
