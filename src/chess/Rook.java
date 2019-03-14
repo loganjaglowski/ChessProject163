@@ -34,12 +34,6 @@ public class Rook extends ChessPiece {
                     valid = true;
         }
 
-        //checks if there is a piece in the way
-        //fixme: write code
-        if(there is a piece in the way){
-            valid = false;
-        }
-
         return valid;
 
     }

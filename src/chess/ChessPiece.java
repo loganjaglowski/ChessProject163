@@ -30,6 +30,7 @@ public abstract class ChessPiece implements IChessPiece {
                                      valid = true;
             }
 
+
         return valid;
     }
 }
