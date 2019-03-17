@@ -12,9 +12,72 @@ public class Pawn extends ChessPiece {
 
     // determines if the move is valid for a pawn piece
     public boolean isValidMove(Move move, IChessPiece[][] board) {
-
         boolean valid = true;
-        // More code is needed
+
+        if (super.isValidMove(move, board) == true){
+
+            System.out.println(super.player() + "fromRow: " + move.fromRow + "fromCol: " + move.fromColumn );
+
+            //TODO: enable moving diagonally when pawn is capturing another pawn en passant
+            //first if control diagonal movement when capturing
+            if (board[move.toRow][move.toColumn] != null) {
+                if ((board[move.toRow][move.toColumn]).player() != super.player()) {
+                    if (move.fromColumn - move.toColumn > 1 || move.fromColumn - move.toColumn < -1) {
+                        valid = false;
+                    }
+                }
+            }else {
+                if (move.fromColumn - move.toColumn != 0) {
+                    valid = false;
+                }
+            }
+            if (super.player() == Player.BLACK) {
+                if (this.isEnPassant(move)) {
+
+                    if (move.fromRow - move.toRow < -2 || move.fromRow - move.toRow > -1) {
+
+                        valid = false;
+                    }
+                } else {
+
+                    if (move.fromRow - move.toRow != -1) {
+                        valid = false;
+                    }
+                }
+            }else{
+                if (this.isEnPassant(move)) {
+
+                    if (move.fromRow - move.toRow > 2 || move.fromRow - move.toRow < 1) {
+                        valid = false;
+
+                    }
+                } else {
+
+                    if (move.fromRow - move.toRow != 1) {
+                        valid = false;
+                    }
+                }
+            }
+        }else{
+            valid = false;
+        }
+
+
+
+
         return valid;
+    }
+
+    public boolean isEnPassant(Move move){
+        if (super.player() == Player.WHITE){
+            if (move.fromRow == 6){
+                return true;
+            }
+        }else{
+            if (move.fromRow == 1){
+                return true;
+            }
+        }
+        return false;
     }
 }

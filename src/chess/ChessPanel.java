@@ -29,7 +29,9 @@ public class ChessPanel extends JPanel {
     private int toCol;
     private int undoSaveFromCol;
     private int undoSaveToCol;
-    // declare other intance variables as needed
+    // declare other instance variables as needed
+
+    private JLabel currentPlayerLabel;
 
     private listener listener;
 
@@ -57,6 +59,10 @@ public class ChessPanel extends JPanel {
                 boardpanel.add(board[r][c]);
             }
         }
+
+        currentPlayerLabel = new JLabel("white");
+        buttonpanel.add(currentPlayerLabel);
+
         add(boardpanel, BorderLayout.WEST);
         boardpanel.setPreferredSize(new Dimension(600, 600));
         add(buttonpanel);
@@ -190,6 +196,9 @@ public class ChessPanel extends JPanel {
                 }
             }
         }
+
+        currentPlayerLabel.setText(model.currentPlayer() + "");
+
         repaint();
     }
 
