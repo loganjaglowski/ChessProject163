@@ -139,6 +139,7 @@ public class ChessPanel extends JPanel {
         wKing = new ImageIcon("./src/chess/wKing.png");
         wPawn = new ImageIcon("./src/chess/wPawn.png");
         wKnight = new ImageIcon("./src/chess/wKnight.png");
+        //Sets the Image for black player pieces
         bRook = new ImageIcon("./src/chess/bRook.png");
         bBishop = new ImageIcon("./src/chess/bBishop.png");
         bQueen = new ImageIcon("./src/chess/bQueen.png");
@@ -147,7 +148,9 @@ public class ChessPanel extends JPanel {
         bKnight = new ImageIcon("./src/chess/bKnight.png");
     }
 
-    // method that updates the board
+    /******************************************************************
+     * A method that updates the board.
+     *****************************************************************/
     private void displayBoard() {
 
         for (int r = 0; r < 8; r++) {
@@ -208,7 +211,7 @@ public class ChessPanel extends JPanel {
             for (int r = 0; r < model.numRows(); r++)
                 for (int c = 0; c < model.numColumns(); c++)
                     if (board[r][c] == event.getSource())
-                        if (firstTurnFlag == true) {
+                        if (firstTurnFlag) {
                             fromRow = r;
                             fromCol = c;
 
@@ -218,7 +221,7 @@ public class ChessPanel extends JPanel {
                             toCol = c;
                             firstTurnFlag = true;
                             Move m = new Move(fromRow, fromCol, toRow, toCol);
-                            if ((model.isValidMove(m)) == true) {
+                            if ((model.isValidMove(m))) {
                                 model.move(m);
                                 model.setNextPlayer();
                                 displayBoard();

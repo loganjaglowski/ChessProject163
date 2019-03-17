@@ -14,7 +14,7 @@ public class Pawn extends ChessPiece {
     public boolean isValidMove(Move move, IChessPiece[][] board) {
         boolean valid = true;
 
-        if (super.isValidMove(move, board) == true){
+        if (super.isValidMove(move, board)){
 
             System.out.println(super.player() + "fromRow: " + move.fromRow + "fromCol: " + move.fromColumn );
 
@@ -68,7 +68,7 @@ public class Pawn extends ChessPiece {
         return valid;
     }
 
-    public boolean isEnPassant(Move move){
+    private boolean isEnPassant(Move move){
         if (super.player() == Player.WHITE){
             if (move.fromRow == 6){
                 return true;
