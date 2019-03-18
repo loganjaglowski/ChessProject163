@@ -60,7 +60,7 @@ public class ChessPanel extends JPanel {
             }
         }
 
-        currentPlayerLabel = new JLabel("white");
+        currentPlayerLabel = new JLabel("White");
         buttonpanel.add(currentPlayerLabel);
 
         add(boardpanel, BorderLayout.WEST);
@@ -200,7 +200,7 @@ public class ChessPanel extends JPanel {
             }
         }
 
-        currentPlayerLabel.setText(model.currentPlayer() + "");
+        currentPlayerLabel.setText("Current player: " + model.currentPlayer());
 
         repaint();
     }
