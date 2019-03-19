@@ -1,5 +1,7 @@
 package chess;
 
+//ai: look for a white piece, look for a black piece, see if in danger. (attemptToRemoveFromDanger)
+
 public class ChessModel implements IChessModel {
     private IChessPiece[][] board;
     private Player player;

@@ -2,24 +2,38 @@ package chess;
 
 public class Pawn extends ChessPiece {
 
+    /******************************************************************
+     * A method that calls the super class method.
+     * @param player the player being used
+     *****************************************************************/
     public Pawn(Player player) {
         super(player);
     }
 
+    /******************************************************************
+     * A method that returns the piece type as a string.
+     * @return piece type name
+     *****************************************************************/
     public String type() {
         return "Pawn";
     }
 
-    // determines if the move is valid for a pawn piece
+    /******************************************************************
+     * A method that checks if the attempted move is valid.
+     * @param move  a {@link chess.Move} object describing the move to
+     * be made.
+     * @param board the {@link chess.IChessPiece} in which this piece
+     * resides.
+     * @return true if valid anf false if not.
+     *****************************************************************/
     public boolean isValidMove(Move move, IChessPiece[][] board) {
         boolean valid = true;
 
+        //checks super class method
         if (super.isValidMove(move, board)){
 
-            System.out.println(super.player() + "fromRow: " + move.fromRow + "fromCol: " + move.fromColumn );
-
             //TODO: enable moving diagonally when pawn is capturing another pawn en passant
-            //first if control diagonal movement when capturing
+            //first if controls diagonal movement when capturing
             if (board[move.toRow][move.toColumn] != null) {
                 if ((board[move.toRow][move.toColumn]).player() != super.player()) {
                     if (move.fromColumn - move.toColumn > 1 || move.fromColumn - move.toColumn < -1) {
@@ -62,12 +76,14 @@ public class Pawn extends ChessPiece {
             valid = false;
         }
 
-
-
-
         return valid;
     }
 
+    /******************************************************************
+     * A helper method that determines if a pawn does some shit. FUck it. IDk.
+     * @param move the attempted move
+     * @return true if en passant and false if not.
+     *****************************************************************/
     private boolean isEnPassant(Move move){
         if (super.player() == Player.WHITE){
             if (move.fromRow == 6){
@@ -81,3 +97,5 @@ public class Pawn extends ChessPiece {
         return false;
     }
 }
+
+//end of class
