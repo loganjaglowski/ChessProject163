@@ -20,7 +20,7 @@ public class Rook extends ChessPiece {
         return "Rook";
     }
 
-    // determines if the move is valid for a rook piece fixme: check if there's a piece in the way
+    // determines if the move is valid for a rook piece
     public boolean isValidMove(Move move, IChessPiece[][] board) {
         int howFarVertical = move.toColumn - move.fromColumn;
         int howFarHorizontal = move.toRow - move.fromRow;
@@ -32,20 +32,26 @@ public class Rook extends ChessPiece {
                 if (move.fromColumn != move.toColumn) {
                     if (move.fromColumn < move.toColumn) {
                         if (howFarVertical == 2)
-                            if (board[move.fromRow][move.fromColumn + 1] != null)
+                            if (board[move.fromRow][move.fromColumn +1]
+                                    != null)
                                 return false;
-                        for (int i = 1; i <= Math.abs(howFarVertical) - 1; i++) {
-                            if (board[move.fromRow][move.fromColumn + i] != null) {
+                        for (int i = 1; i <= Math.abs(howFarVertical) -
+                                1; i++) {
+                            if (board[move.fromRow][move.fromColumn +
+                                    i] != null) {
                                 return false;
                             }
                         }
                     }
                     if (move.fromColumn > move.toColumn) {
                         if (howFarVertical == -2)
-                            if (board[move.fromRow][move.fromColumn - 1] != null)
+                            if (board[move.fromRow][move.fromColumn -
+                                    1] != null)
                                 return false;
-                        for (int i = 1; i <= Math.abs(howFarVertical) - 1; i++) {
-                            if (board[move.fromRow][move.fromColumn - i] != null) {
+                        for (int i = 1; i <= Math.abs(howFarVertical)
+                                - 1; i++) {
+                            if (board[move.fromRow][move.fromColumn -
+                                    i] != null) {
                                 return false;
                             }
                         }
@@ -53,24 +59,32 @@ public class Rook extends ChessPiece {
                     valid = true;
                 }
             }
+
+            //prevents from hopping over pieces
             if (move.fromColumn == move.toColumn) {
                 if (move.fromRow != move.toRow) {
                     if (move.fromRow < move.toRow) {
                         if (howFarHorizontal == 2)
-                            if (board[move.fromRow + 1][move.fromColumn] != null)
+                            if(board[move.fromRow + 1][move.fromColumn]
+                                    != null)
                                 return false;
-                        for (int i = 1; i <= Math.abs(howFarHorizontal) - 1; i++) {
-                            if (board[move.fromRow + i][move.fromColumn] != null) {
+                        for (int i = 1; i <= Math.abs(howFarHorizontal)
+                                - 1; i++) {
+                            if(board[move.fromRow +i][move.fromColumn]
+                                    != null) {
                                 return false;
                             }
                         }
                     }
                     if (move.fromRow > move.toRow) {
                         if (howFarHorizontal == -2)
-                            if (board[move.fromRow - 1][move.fromColumn] != null)
+                            if (board[move.fromRow -1][move.fromColumn]
+                                    != null)
                                 return false;
-                        for (int i = 1; i <= Math.abs(howFarHorizontal) - 1; i++) {
-                            if (board[move.fromRow - i][move.fromColumn] != null) {
+                        for (int i = 1; i <= Math.abs(howFarHorizontal)
+                                - 1; i++) {
+                            if (board[move.fromRow- i][move.fromColumn]
+                                    != null) {
                                 return false;
                             }
                         }
@@ -82,3 +96,5 @@ public class Rook extends ChessPiece {
         return valid;
     }
 }
+
+//end of class
