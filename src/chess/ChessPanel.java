@@ -6,15 +6,21 @@ import javax.swing.*;
 
 public class ChessPanel extends JPanel {
 
+    /** A board of buttons */
     private JButton[][] board;
+
+    /** The model for the game */
     private ChessModel model;
 
+    /** The images to represent the white pieces */
     private ImageIcon wRook;
     private ImageIcon wBishop;
     private ImageIcon wQueen;
     private ImageIcon wKing;
     private ImageIcon wPawn;
     private ImageIcon wKnight;
+
+    /** The images to represent the black pieces */
     private ImageIcon bRook;
     private ImageIcon bBishop;
     private ImageIcon bQueen;
@@ -22,19 +28,34 @@ public class ChessPanel extends JPanel {
     private ImageIcon bPawn;
     private ImageIcon bKnight;
 
+    //fixme: what is this? update comment
     private boolean firstTurnFlag;
+
+    /** The row being moved from */
     private int fromRow;
+
+    /** The row being moved to */
     private int toRow;
+
+    /** The column being moved from */
     private int fromCol;
+
+    /** The column being moved to */
     private int toCol;
+
+    //fixme: says they're never used, should these 2 still exist?
     private int undoSaveFromCol;
     private int undoSaveToCol;
-    // declare other instance variables as needed
 
+    /** A label that shows whose turn it is */
     private JLabel currentPlayerLabel;
 
+    /** The listener for the action listeners */
     private listener listener;
 
+    /******************************************************************
+     * A constructor that sets up the panel.
+     *****************************************************************/
     public ChessPanel() {
         model = new ChessModel();
         board = new JButton[model.numRows()][model.numColumns()];
@@ -43,16 +64,18 @@ public class ChessPanel extends JPanel {
 
         JPanel boardpanel = new JPanel();
         JPanel buttonpanel = new JPanel();
-        boardpanel.setLayout(new GridLayout(model.numRows(), model.numColumns(), 1, 1));
+        boardpanel.setLayout(new GridLayout(model.numRows(), model.
+                numColumns(), 1, 1));
 
+        //goes through the board and sets action listeners, pieces
         for (int r = 0; r < model.numRows(); r++) {
             for (int c = 0; c < model.numColumns(); c++) {
                 if (model.pieceAt(r, c) == null) {
                     board[r][c] = new JButton("", null);
                     board[r][c].addActionListener(listener);
-                } else if (model.pieceAt(r, c).player() == Player.WHITE)
+                } else if(model.pieceAt(r, c).player() == Player.WHITE)
                     placeWhitePieces(r, c);
-                  else if (model.pieceAt(r, c).player() == Player.BLACK)
+                  else if(model.pieceAt(r, c).player() == Player.BLACK)
                     placeBlackPieces(r, c);
 
                 setBackGroundColor(r, c);
@@ -69,14 +92,27 @@ public class ChessPanel extends JPanel {
         firstTurnFlag = true;
     }
 
+    /******************************************************************
+     * A method that uses the parameters to create the checkered chess
+     * board appearance.
+     * @param r number of rows
+     * @param c number of columns
+     *****************************************************************/
     private void setBackGroundColor(int r, int c) {
         if ((c % 2 == 1 && r % 2 == 0) || (c % 2 == 0 && r % 2 == 1)) {
             board[r][c].setBackground(Color.LIGHT_GRAY);
-        } else if ((c % 2 == 0 && r % 2 == 0) || (c % 2 == 1 && r % 2 == 1)) {
+        } else if((c % 2 == 0 && r % 2 == 0) || (c % 2 == 1 && r % 2
+                == 1)) {
             board[r][c].setBackground(Color.WHITE);
         }
     }
 
+    /******************************************************************
+     * A method that places the images on squares designated as white
+     * pieces.
+     * @param r The current row
+     * @param c The current column
+     *****************************************************************/
     private void placeWhitePieces(int r, int c) {
         if (model.pieceAt(r, c).type().equals("Pawn")) {
             board[r][c] = new JButton(null, wPawn);
@@ -104,6 +140,12 @@ public class ChessPanel extends JPanel {
         }
     }
 
+    /******************************************************************
+     * A method that places the images on squares designated as black
+     * pieces.
+     * @param r The current row
+     * @param c The current column
+     *****************************************************************/
     private void placeBlackPieces(int r, int c) {
         if (model.pieceAt(r, c).type().equals("Pawn")) {
             board[r][c] = new JButton(null, bPawn);
@@ -131,6 +173,9 @@ public class ChessPanel extends JPanel {
         }
     }
 
+    /******************************************************************
+     * A method that creates the images and adds them to the icons.
+     *****************************************************************/
     private void createIcons() {
         // Sets the Image for white player pieces
         wRook = new ImageIcon("./src/chess/wRook.png");
@@ -200,7 +245,8 @@ public class ChessPanel extends JPanel {
             }
         }
 
-        currentPlayerLabel.setText("Current player: " + model.currentPlayer());
+        currentPlayerLabel.setText("Current player: " + model.
+                currentPlayer());
 
         repaint();
     }
@@ -220,7 +266,8 @@ public class ChessPanel extends JPanel {
                             toRow = r;
                             toCol = c;
                             firstTurnFlag = true;
-                            Move m = new Move(fromRow, fromCol, toRow, toCol);
+                            Move m = new Move(fromRow, fromCol, toRow,
+                                    toCol);
                             if ((model.isValidMove(m))) {
                                 model.move(m);
                                 model.setNextPlayer();
@@ -230,3 +277,5 @@ public class ChessPanel extends JPanel {
         }
     }
 }
+
+//end of class

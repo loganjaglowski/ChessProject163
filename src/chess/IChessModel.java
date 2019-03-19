@@ -51,3 +51,5 @@ public interface IChessModel {
     Player currentPlayer();
 
 }
+
+//end of class
