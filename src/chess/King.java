@@ -2,14 +2,30 @@ package chess;
 
 public class King extends ChessPiece {
 
+    /******************************************************************
+     * A constructor that calls the super class method on the player.
+     * @param player the player being used.
+     *****************************************************************/
     public King(Player player) {
         super(player);
     }
 
+    /******************************************************************
+     * A method that returns the piece type as a string.
+     * @return type of piece
+     *****************************************************************/
     public String type() {
         return "King";
     }
 
+    /******************************************************************
+     * A method that checks if an attempted move is valid.
+     * @param move  a {@link chess.Move} object describing the move to
+     * be made.
+     * @param board the {@link chess.IChessPiece} in which this piece
+     * resides.
+     * @return true if valid, false if not
+     *****************************************************************/
     public boolean isValidMove(Move move, IChessPiece[][] board) {
         boolean valid = false;
 
@@ -52,3 +68,5 @@ public class King extends ChessPiece {
         return valid;
     }
 }
+
+//end of class

@@ -1,5 +1,7 @@
 package chess;
 
+//ai: look for a white piece, look for a black piece, see if in danger. (attemptToRemoveFromDanger)
+
 public class ChessModel implements IChessModel {
     private IChessPiece[][] board;
     private Player player;
@@ -58,7 +60,33 @@ public class ChessModel implements IChessModel {
      *****************************************************************/
     public boolean isComplete() {
         boolean valid = false;
-
+        IChessPiece oldPiece;
+        if (inCheck(currentPlayer())) {
+            valid = true;
+            for (int x = 0; x < numRows(); x++) {
+                for (int y = 0; y < numColumns(); y++) {
+                    if (board[x][y] != null && board[x][y].player() == currentPlayer()) {
+                        for (int r = 0; r < numRows(); r++) {
+                            for (int c = 0; c < numColumns(); c++) {
+                                Move m = new Move(x, y, r, c);
+                                if (board[x][y].isValidMove(m, board)) {
+                                    oldPiece = board[m.toRow][m.toColumn];
+                                    board[m.toRow][m.toColumn] = board[m.fromRow][m.fromColumn];
+                                    board[m.fromRow][m.fromColumn] = null;
+                                    if(!inCheck(currentPlayer())) {
+                                        board[m.fromRow][m.fromColumn] = board[m.toRow][m.toColumn];
+                                        board[m.toRow][m.toColumn] = oldPiece;
+                                        return false;
+                                    }
+                                    board[m.fromRow][m.fromColumn] = board[m.toRow][m.toColumn];
+                                    board[m.toRow][m.toColumn] = oldPiece;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return valid;
     }
 

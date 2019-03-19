@@ -28,7 +28,7 @@ public class ChessPanel extends JPanel {
     private ImageIcon bPawn;
     private ImageIcon bKnight;
 
-    //fixme: what is this? update comment
+    /** Keeps track of first click on a piece */
     private boolean firstTurnFlag;
 
     /** The row being moved from */
@@ -43,8 +43,10 @@ public class ChessPanel extends JPanel {
     /** The column being moved to */
     private int toCol;
 
-    //fixme: says they're never used, should these 2 still exist?
+    /** The fromColumn saved for undo */
     private int undoSaveFromCol;
+
+    /** The toColumn saved for undo */
     private int undoSaveToCol;
 
     /** A label that shows whose turn it is */

@@ -2,11 +2,11 @@ package chess;
 
 public interface IChessModel {
 
-    /**
+    /******************************************************************
      * Returns whether the game is complete.
      *
      * @return {@code true} if complete, {@code false} otherwise.
-     */
+     *****************************************************************/
     boolean isComplete();
 
     /******************************************************************
