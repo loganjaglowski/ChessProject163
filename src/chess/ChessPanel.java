@@ -256,7 +256,7 @@ public class ChessPanel extends JPanel {
         public void actionPerformed(ActionEvent event) {
             for (int r = 0; r < model.numRows(); r++)
                 for (int c = 0; c < model.numColumns(); c++)
-                    if (board[r][c] == event.getSource())
+                    if (board[r][c] == event.getSource()) {
                         if (firstTurnFlag) {
                             fromRow = r;
                             fromCol = c;
@@ -274,6 +274,7 @@ public class ChessPanel extends JPanel {
                                 displayBoard();
                             }
                         }
+                    }
         }
     }
 }

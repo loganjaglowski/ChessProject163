@@ -21,7 +21,7 @@ public class ChessModel implements IChessModel {
         board[7][3] = new Queen(Player.WHITE);
         board[7][4] = new King(Player.WHITE);
         board[7][5] = new Bishop(Player.WHITE);
-        board[7][6] = new Knight (Player.WHITE);
+        board[7][6] = new Knight(Player.WHITE);
         board[7][7] = new Rook(Player.WHITE);
         board[6][0] = new Pawn(Player.WHITE);
         board[6][1] = new Pawn(Player.WHITE);
@@ -75,7 +75,7 @@ public class ChessModel implements IChessModel {
         if (board[move.fromRow][move.fromColumn] != null)
             if (board[move.fromRow][move.fromColumn].isValidMove(move,
                     board))
-                if((board[move.fromRow][move.fromColumn]).player() !=
+                if ((board[move.fromRow][move.fromColumn]).player() !=
                         currentPlayer().next())
                     valid = true;
 
@@ -88,7 +88,7 @@ public class ChessModel implements IChessModel {
      * be made.
      *****************************************************************/
     public void move(Move move) {
-        board[move.toRow][move.toColumn] =  board[move.fromRow][move.
+        board[move.toRow][move.toColumn] = board[move.fromRow][move.
                 fromColumn];
         board[move.fromRow][move.fromColumn] = null;
     }
@@ -105,8 +105,8 @@ public class ChessModel implements IChessModel {
         //finds the position of the king
         for (int x = 0; x < numRows(); x++) {
             for (int y = 0; y < numColumns(); y++) {
-                if (board[x][y] != null && board[x][y].type().equals
-                        ("King") && board[x][y].player() == p) {
+                if (board[x][y] != null && board[x][y].type().equals("King")
+                        && board[x][y].player() == p) {
                     kingX = x;
                     kingY = y;
                     break;
@@ -119,8 +119,8 @@ public class ChessModel implements IChessModel {
             for (int y = 0; y < numColumns(); y++) {
                 if (board[x][y] != null && board[x][y].player() !=
                         board[kingX][kingY].player()) {
-                    Move m = new Move (x, y, kingX, kingY);
-                    if (board[x][y].isValidMove(m , board))
+                    Move m = new Move(x, y, kingX, kingY);
+                    if (board[x][y].isValidMove(m, board))
                         valid = true;
                 }
             }
@@ -181,6 +181,27 @@ public class ChessModel implements IChessModel {
      * A method that creates an AI for the human player to fight.
      *****************************************************************/
     public void AI() {
+        // ai is default black
+
+        for (int rb = 0; rb < 8; rb++) {
+            for (int cb = 0; cb < 8; cb++) {
+                if (board[rb][cb].player() == Player.BLACK) {
+                    if (this.isDangerous(rb, cb)) {
+                        for (int r = 0; r < 8; r++) {
+                            for (int c = 0; c < 8; c++) {
+                                if (this.isDangerous(r, c) == false) {
+                                    Move m = new Move(rb, cb, r, c);
+                                    this.move(m);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+
         /*
          * Write a simple AI set of rules in the following order.
          * a. Check to see if you are in check.
@@ -202,6 +223,25 @@ public class ChessModel implements IChessModel {
          */
 
     }
+
+
+    public boolean isDangerous(int row, int col){
+        for (int r = 0; r < 8; r++){
+            for (int c = 0; c < 8; c++){
+                if (board[r][c].player() == Player.WHITE){
+                    Move m = new Move(r, c, row, col);
+                    if (board[r][c].isValidMove(m, board)){
+                            return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+
 }
 
 //end of class
