@@ -3,10 +3,11 @@ package chess;
 //ai: look for a white piece, look for a black piece, see if in danger. (attemptToRemoveFromDanger)
 
 public class ChessModel implements IChessModel {
+    /** The board */
     private IChessPiece[][] board;
-    private Player player;
 
-    // declare other instance variables as needed
+    /** The current player */
+    private Player player;
 
     /*****************************************************************
      * A constructor that creates the chess model.
