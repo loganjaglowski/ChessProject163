@@ -52,6 +52,9 @@ public class ChessPanel extends JPanel {
     /** A label that shows whose turn it is */
     private JLabel currentPlayerLabel;
 
+    /** A button that triggers undo */
+    private JButton undoBtn;
+
     /** The listener for the action listeners */
     private listener listener;
 
@@ -85,8 +88,14 @@ public class ChessPanel extends JPanel {
             }
         }
 
-        currentPlayerLabel = new JLabel("White");
+        //adds player label to panel
+        currentPlayerLabel = new JLabel("Current player: " +
+                model.currentPlayer());
         buttonpanel.add(currentPlayerLabel);
+
+        //adds undo button to panel
+        undoBtn = new JButton("Undo");
+        buttonpanel.add(undoBtn);
 
         add(boardpanel, BorderLayout.WEST);
         boardpanel.setPreferredSize(new Dimension(600, 600));
