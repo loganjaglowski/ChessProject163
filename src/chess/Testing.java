@@ -47,8 +47,22 @@ public class Testing {
     }
     //todo: test more pieces and board indexes
 
+    //tests normal move
+    @Test
+    public void moveTest(){
+        ChessModel test = new ChessModel();
+        Move m = new Move(1, 1, 2, 1);
+        test.move(m);
+        assertEquals(test.pieceAt(2, 1).type(), new Pawn(Player.BLACK).type());
+    }
 
-
+    //tests empty move
+    @Test
+    public void moveEmpty(){
+        ChessModel test = new ChessModel();
+        Move fail = new Move(3, 1, 4, 2);
+        assertFalse(test.isValidMove(fail));
+    }
 
 
     //tests isComplete() when game is incomplete

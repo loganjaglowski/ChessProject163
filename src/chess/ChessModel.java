@@ -104,6 +104,7 @@ public class ChessModel implements IChessModel {
         if (board[move.fromRow][move.fromColumn] != null)
             if (board[move.fromRow][move.fromColumn].isValidMove(move,
                     board))
+                //ensures user didn't land on own piece
                 if ((board[move.fromRow][move.fromColumn]).player() !=
                         currentPlayer().next())
                     valid = true;
