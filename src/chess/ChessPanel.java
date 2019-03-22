@@ -96,6 +96,7 @@ public class ChessPanel extends JPanel {
         //adds undo button to panel
         undoBtn = new JButton("Undo");
         buttonpanel.add(undoBtn);
+        undoBtn.addActionListener(listener);
 
         add(boardpanel, BorderLayout.WEST);
         boardpanel.setPreferredSize(new Dimension(600, 600));
@@ -285,6 +286,8 @@ public class ChessPanel extends JPanel {
                                 displayBoard();
                             }
                         }
+                    }else if(undoBtn == event.getSource()){
+                        //fixme: UNDO, maybe model.undo(); ?
                     }
         }
     }
