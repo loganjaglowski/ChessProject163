@@ -1,5 +1,7 @@
 package chess;
 
+//cannot edit this class
+
 public class Move {
     /** Rows and columns being moved from and to */
     public int fromRow, fromColumn, toRow, toColumn;

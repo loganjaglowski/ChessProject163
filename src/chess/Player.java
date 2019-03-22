@@ -1,5 +1,7 @@
 package chess;
 
+//cannot edit this class
+
 public enum Player {
     BLACK, WHITE;
 

@@ -55,6 +55,8 @@ public class ChessPanel extends JPanel {
     /** The listener for the action listeners */
     private listener listener;
 
+    private boolean AIisActive;
+
     /******************************************************************
      * A constructor that sets up the panel.
      *****************************************************************/
@@ -63,6 +65,8 @@ public class ChessPanel extends JPanel {
         board = new JButton[model.numRows()][model.numColumns()];
         listener = new listener();
         createIcons();
+
+        this.askForAI(); //generates message at start of game prompting the user for the number of players
 
         JPanel boardpanel = new JPanel();
         JPanel buttonpanel = new JPanel();
@@ -252,6 +256,30 @@ public class ChessPanel extends JPanel {
 
         repaint();
     }
+    public void askForAI(){
+
+        //strings in this array correspond to the text of the buttons
+        Object[] buttons = {"one player", "two players"};
+
+        // this is the overloaded constructor of the JOptionPane, for custom buttons
+        int result = JOptionPane.showOptionDialog(null, "One player or two?", null,
+                JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, buttons, buttons[0]);
+
+        if (result == JOptionPane.YES_OPTION){
+            AIisActive = true;
+        }else{
+            AIisActive = false;
+        }
+
+
+
+//        JOptionPane ai = new JOptionPane();
+//        ai.showMessageDialog(null, "One player or two?");
+//        JButton one = new JButton("one player");
+//        JButton two = new JButton("two players");
+
+    }
+
 
     // inner class that represents action listener for buttons
     private class listener implements ActionListener {
@@ -267,13 +295,19 @@ public class ChessPanel extends JPanel {
                         } else {
                             toRow = r;
                             toCol = c;
-                            firstTurnFlag = true;
                             Move m = new Move(fromRow, fromCol, toRow,
                                     toCol);
                             if ((model.isValidMove(m))) {
                                 model.move(m);
-                                model.setNextPlayer();
+                                firstTurnFlag = true;
                                 displayBoard();
+                                if (AIisActive){
+                                    model.AI();
+                                    displayBoard();
+                                }else{
+                                    model.setNextPlayer();
+
+                                }
                             }
                         }
                     }

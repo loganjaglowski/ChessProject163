@@ -9,6 +9,8 @@ public class ChessModel implements IChessModel {
     /** The current player */
     private Player player;
 
+    private boolean firstTurn = true;
+
     /*****************************************************************
      * A constructor that creates the chess model.
      *****************************************************************/
@@ -212,56 +214,95 @@ public class ChessModel implements IChessModel {
     public void AI() {
         // ai is default black
 
-        for (int rb = 0; rb < 8; rb++) {
-            for (int cb = 0; cb < 8; cb++) {
-                if (board[rb][cb].player() == Player.BLACK) {
-                    if (this.isDangerous(rb, cb)) {
-                        for (int r = 0; r < 8; r++) {
-                            for (int c = 0; c < 8; c++) {
-                                if (this.isDangerous(r, c) == false) {
-                                    Move m = new Move(rb, cb, r, c);
-                                    this.move(m);
+        System.out.println("Ai is active");
+
+        if (firstTurn == true){
+            this.move(new Move(1, 1, 3, 1 ));
+            firstTurn = false;
+        }else {
+
+            //attempts to remove piece from danger
+            //TODO: priority system to save more important pieces first (if i get everything else done, which probably will not happen)
+            for (int rb = 0; rb < 8; rb++) {
+                for (int cb = 0; cb < 8; cb++) {
+                    if (board[rb][cb] != null) {
+                        if (board[rb][cb].player() == Player.BLACK) {  //^ searches board for any piece controlled by the ai
+                            if (this.isDangerous(rb, cb)) {//if the piece (rb, cb) is in danger
+                                System.out.println(board[rb][cb].type() + "is in danger, first check");
+                                for (int r = 0; r < 8; r++) {
+                                    for (int c = 0; c < 8; c++) {
+                                        if (board[r][c] == null || board[r][c].player() == Player.WHITE){
+                                            System.out.println("the spot that it is checking is available");
+                                            Move m = new Move(rb, cb, r, c);
+                                            System.out.println(board[rb][cb].type() + " is attempting to move from: " + rb + ", " + cb + " to: " + r + ", " + c);
+                                            if (board[rb][cb].isValidMove(m, board)){
+                                                System.out.println("it can move to that spot");
+                                                if (this.isDangerous(r, c) == false) {  //^ searches board and checks for tile which is not dangerous
+                                                    System.out.println("from: " + rb + ", " + cb + "to: " + r + ", " + c);
+                                                    System.out.println("piece: " + board[rb][cb].type());
+                                                    this.move(m);
+                                                    r = 7;
+                                                    c = 7;
+
+                                                }else{
+                                                    System.out.println("piece: " + board[rb][cb].type() + "is in danger, second check, on: " +  r + ", " + c);
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+
+            //get out of check
+            if (this.inCheck(Player.BLACK)){
+                //try to move king
+
+
+
+
+
+
+            }
+
+            /*
+             * Write a simple AI set of rules in the following order.
+             * a. Check to see if you are in check.
+             * 		i. If so, get out of check by moving the king or placing
+             * 		a piece to block the check
+             *
+             * b. Attempt to put opponent into check (or checkmate).
+             * 		i. Attempt to put opponent into check without losing
+             * 		your piece
+             *		ii. Perhaps you have won the game.
+             *
+             *c. Determine if any of your pieces are in danger,
+             *		i. Move them if you can.
+             *		ii. Attempt to protect that piece.
+             *
+             *d. Move a piece (pawns first) forward toward opponent king
+             *		i. check to see if that piece is in danger of being
+             *		removed, if so, move a different piece.
+             */
+
         }
-
-
-
-        /*
-         * Write a simple AI set of rules in the following order.
-         * a. Check to see if you are in check.
-         * 		i. If so, get out of check by moving the king or placing
-          * 		a piece to block the check
-         *
-         * b. Attempt to put opponent into check (or checkmate).
-         * 		i. Attempt to put opponent into check without losing
-         * 		your piece
-         *		ii. Perhaps you have won the game.
-         *
-         *c. Determine if any of your pieces are in danger,
-         *		i. Move them if you can.
-         *		ii. Attempt to protect that piece.
-         *
-         *d. Move a piece (pawns first) forward toward opponent king
-         *		i. check to see if that piece is in danger of being
-         *		removed, if so, move a different piece.
-         */
-
     }
 
-
+    //returns boolean value. true if the spot (row, col) can be taken by any white piece
     public boolean isDangerous(int row, int col){
-        for (int r = 0; r < 8; r++){
-            for (int c = 0; c < 8; c++){
-                if (board[r][c].player() == Player.WHITE){
-                    Move m = new Move(r, c, row, col);
-                    if (board[r][c].isValidMove(m, board)){
+        for (int r = 0; r < numRows(); r++){
+            for (int c = 0; c < numColumns(); c++){
+                if (board[r][c] != null){
+                    if (board[r][c].player() == Player.WHITE){
+                        Move m = new Move(r, c, row, col);
+                        if (this.isValidMove(m)){
                             return true;
+                        }
                     }
+
                 }
             }
         }
