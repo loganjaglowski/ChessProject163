@@ -140,7 +140,8 @@ public class ChessModel implements IChessModel {
                         && board[x][y].player() == p) {
                     kingX = x;
                     kingY = y;
-                    break;
+                    x = numColumns() - 1;
+                    y = numRows() - 1;
                 }
             }
         }
@@ -259,14 +260,84 @@ public class ChessModel implements IChessModel {
 
             //get out of check
             if (this.inCheck(Player.BLACK)){
-                //try to move king
+                //find King
+                int rk = 0;
+                int ck = 0;
+                while (rk < 8) {
+                    while (ck < 8) {
+                        if (board[rk][ck] != null) {
+                            if (board[rk][ck].player() == Player.BLACK) {
+                                if (board[rk][ck].type().equals("King")) {
+                                    break;
+                                }
+                            }
+                        }
+                        ck++;
+                    }
+                    rk++;
+                }
 
+                //move king out of danger
+                if (this.isDangerous(rk, ck)) {//if the piece (rb, cb) is in danger
+                    //System.out.println(board[rb][cb].type() + "is in danger, first check");
+                    for (int r = 0; r < 8; r++) {
+                        for (int c = 0; c < 8; c++) {
+                            if (board[r][c] == null || board[r][c].player() == Player.WHITE) {
+                                //          System.out.println("the spot that it is checking is available");
+                                Move m = new Move(rk, ck, r, c);
+                                //System.out.println(board[rb][cb].type() + " is attempting to move from: " + rb + ", " + cb + " to: " + r + ", " + c);
+                                if (board[rk][ck].isValidMove(m, board)) {
+                                    //System.out.println("it can move to that spot");
+                                    if (this.isDangerous(r, c) == false) {  //^ searches board and checks for tile which is not dangerous
+                                        //  System.out.println("from: " + rb + ", " + cb + "to: " + r + ", " + c);
+                                        //System.out.println("piece: " + board[rb][cb].type());
+                                        this.move(m);
+                                        r = 7;
+                                        c = 7;
 
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                //if there the king cannot move out of danger, move another piece
+                if (board[rk][ck] != null) {
+                    for (int rb = 0; rb < 8; rb++) {
+                        for (int cb = 0; cb < 8; cb++) {
+                            if (board[rb][cb] != null) {
+                                if (board[rb][cb].player() == Player.BLACK) {
+                                    if (!board[rb][cb].type().equals("King")){ //finds any black piece that isnt a king
+                                        for (int r = 0; r < 8; r++){
+                                            for (int c = 0; c < 8; c++){
+                                                Move move = new Move(rb, cb, r, c);
+                                                if (board[rb][cb].isValidMove(move, board)){
+                                                    this.move(move);
+                                                    if (this.isDangerous(rk, ck) == true){ //checks to see if king is still in danger, moves piece back if it is
+                                                        this.move(new Move(r, c, rb, cb));
+                                                    }else{// breaks out of loops if king has been saved
+                                                        c = 7;
+                                                        r = 7;
+                                                        cb = 7;
+                                                        rb = 7;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
 
 
 
             }
+
+
+
 
             /*
              * Write a simple AI set of rules in the following order.
