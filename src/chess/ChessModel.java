@@ -217,7 +217,7 @@ public class ChessModel implements IChessModel {
 
         System.out.println("Ai is active");
 
-        if (firstTurn == true){
+        if (firstTurn == true){    
             this.move(new Move(1, 1, 3, 1 ));
             firstTurn = false;
         }else {
