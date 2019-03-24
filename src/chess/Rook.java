@@ -2,6 +2,8 @@ package chess;
 
 public class Rook extends ChessPiece {
 
+    boolean moved = false;
+
     /******************************************************************
      * A constructor that calls the same method in the super class.
      * @param player the current player owner of the rook
@@ -18,6 +20,10 @@ public class Rook extends ChessPiece {
      *****************************************************************/
     public String type() {
         return "Rook";
+    }
+
+    public boolean hasMoved() {
+        return moved;
     }
 
     // determines if the move is valid for a rook piece
@@ -56,6 +62,7 @@ public class Rook extends ChessPiece {
                             }
                         }
                     }
+                    moved = true;
                     valid = true;
                 }
             }
@@ -89,6 +96,7 @@ public class Rook extends ChessPiece {
                             }
                         }
                     }
+                    moved = true;
                     valid = true;
                 }
             }
