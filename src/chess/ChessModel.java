@@ -217,33 +217,31 @@ public class ChessModel implements IChessModel {
 
         System.out.println("Ai is active");
 
-        if (firstTurn == true){
-            this.move(new Move(1, 1, 3, 1 ));
+        if (firstTurn == true) {
+            this.move(new Move(1, 1, 3, 1));
             firstTurn = false;
-        }else {
-
-            //find King
-            int rk = 0;
-            int ck = 0;
-            while (rk < 8) {
-                while (ck < 8) {
-                    if (board[rk][ck] != null) {
-                        if (board[rk][ck].player() == Player.BLACK) {
-                            if (board[rk][ck].type().equals("King")) {
-                                break; //this only breaks out of the second loop but thats okay, the first only increments it
-                            }
-                        }
-                    }
-                    ck++;
-                }
-                rk++;
-            }
-
-
-
+            System.out.println("reached: first move");
+        } else {
+            System.out.println("reached: next move");
             //get out of check
             if (this.inCheck(Player.BLACK)) {
-
+                System.out.println("reached: king in check");
+                //find  Black King
+                int rk = 0;
+                int ck = 0;
+                while (rk < 8) {
+                    while (ck < 8) {
+                        if (board[rk][ck] != null) {
+                            if (board[rk][ck].player() == Player.BLACK) {
+                                if (board[rk][ck].type().equals("King")) {
+                                    break; //this only breaks out of the second loop but thats okay, the first only increments it
+                                }
+                            }
+                        }
+                        ck++;
+                    }
+                    rk++;
+                }
                 //move king out of danger
                 if (this.isDangerous(rk, ck)) {//if the piece (rb, cb) is in danger
                     //System.out.println(board[rb][cb].type() + "is in danger, first check");
@@ -298,10 +296,13 @@ public class ChessModel implements IChessModel {
                     }
                 }
             } else {
+                System.out.println("reached: king is not in check, its not the first turn");
                 boolean moved = false;
-                while (moved == true) {
+                while (moved == false) {
+                    System.out.println("reached: moved while loop");
                     //attempts to remove piece from danger
                     //TODO: priority system to save more important pieces first (if i get everything else done, which probably will not happen)
+                    System.out.println("reached: remove piece from danger");
                     for (int rb = 0; rb < 8; rb++) {
                         for (int cb = 0; cb < 8; cb++) {
                             if (board[rb][cb] != null) {
@@ -326,57 +327,157 @@ public class ChessModel implements IChessModel {
                                                 }
                                             }
                                         }
-
-
-
-                                    }else{
-
                                     }
                                 }
                             }
                         }
                     }
 
-                    //attempt to capture white king (needs info from before the .incheck if)
-                    Move move = new Move(rb, cb, rk, ck);
-                    if (board[rb][cb].isValidMove(move, board)) {
-                        this.move(move);
-                        moved = true;
+                    System.out.println("reached: attempt to put enemy king in check");
+
+                    //find white King
+                    int rwk = 0;
+                    int cwk = 0;
+                    while (rwk < 8) {
+                        while (cwk < 8) {
+                            if (board[rwk][cwk] != null) {
+                                if (board[rwk][cwk].player() == Player.BLACK) {
+                                    if (board[rwk][cwk].type().equals("King")) {
+                                        break; //this only breaks out of the second loop but thats okay, the first only increments it
+                                    }
+                                }
+                            }
+                            cwk++;
+                        }
+                        rwk++;
                     }
 
-                }
+                    //attempt to capture the white king
+                    for (int rb = 0; rb < 8; rb++) {
+                        for (int cb = 0; cb < 8; cb++) {
+                            if (board[rb][cb] != null) {
+                                if (board[rb][cb].player() == Player.BLACK) {  //^ searches board for any piece controlled by the ai
+                                    //attempt to capture white king (needs info from before the .incheck if)
+                                    Move move = new Move(rb, cb, rwk, cwk);
+                                    if (board[rb][cb].isValidMove(move, board)) {
+                                        this.move(move);
+                                        moved = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
 
 
+                    System.out.println("reached: try to take any enemy piece");
 
-
-
-
-                //advance pieces and maybe try to take pieces
-                //find lowest priority piece
-                boolean foundLowestPriorityPiece = false;
-                int rowBlack = 0;
-                int colBlack = 0;
-                while (foundLowestPriorityPiece == false) {
+                    //advance pieces and maybe try to take pieces
+                    //find lowest priority piece
+                    // boolean foundLowestPriorityPiece = false;
+                    // int rowBlack = 0;
+                    //int colBlack = 0;
+                    // while (foundLowestPriorityPiece == false) {
                     for (int rb = 0; rb < 8; rb++) {
                         for (int cb = 0; cb < 8; cb++) {
                             if (board[rb][cb] != null) {
                                 if (board[rb][cb].player() == Player.BLACK) {
                                     if (board[rb][cb].type().equals("Pawn")) {
-                                        foundLowestPriorityPiece = true;
-                                        rowBlack = rb;
-                                        colBlack = cb;
+                                        //  foundLowestPriorityPiece = true;
+//                                            rowBlack = rb;
+//                                            colBlack = cb;
+                                        for (int rw = 0; rw < 8; rw++) {
+                                            for (int cw = 0; cw < 8; cw++) {
+                                                if (board[rw][cw] != null) {
+                                                    if (board[rw][cw].player() == Player.WHITE) {
+                                                        Move move = new Move(rb, cb, rw, cw);
+                                                        if (board[rb][cb].isValidMove(move, board)) {
+                                                            if (this.isDangerous(cw, rw) == false) {
+                                                                this.move(move);
+                                                                moved = true;
+                                                                //TODO: maybe implement priority system, for taking important pieces first
+
+                                                            }
+                                                        }
+
+                                                    }
+                                                }
+                                            }
+                                        }
+
+
                                     } else if (board[rb][cb].type().equals("Knight") || board[rb][cb].type().equals("Rook") || board[rb][cb].type().equals("Bishop")) {
-                                        foundLowestPriorityPiece = true;
-                                        rowBlack = rb;
-                                        colBlack = cb;
+                                        //foundLowestPriorityPiece = true;
+//                                            rowBlack = rb;
+//                                            colBlack = cb;
+
+                                        for (int rw = 0; rw < 8; rw++) {
+                                            for (int cw = 0; cw < 8; cw++) {
+                                                if (board[rw][cw] != null) {
+                                                    if (board[rw][cw].player() == Player.WHITE) {
+                                                        Move move = new Move(rb, cb, rw, cw);
+                                                        if (board[rb][cb].isValidMove(move, board)) {
+                                                            if (this.isDangerous(cw, rw) == false) {
+                                                                this.move(move);
+                                                                moved = true;
+                                                                //TODO: maybe implement priority system, for taking important pieces first
+
+                                                            }
+                                                        }
+
+                                                    }
+                                                }
+                                            }
+                                        }
+
                                     } else if (board[rb][cb].type().equals("Queen")) {
-                                        foundLowestPriorityPiece = true;
-                                        rowBlack = rb;
-                                        colBlack = cb;
+                                        //foundLowestPriorityPiece = true;
+//                                            rowBlack = rb;
+//                                            colBlack = cb;
+
+                                        for (int rw = 0; rw < 8; rw++) {
+                                            for (int cw = 0; cw < 8; cw++) {
+                                                if (board[rw][cw] != null) {
+                                                    if (board[rw][cw].player() == Player.WHITE) {
+                                                        Move move = new Move(rb, cb, rw, cw);
+                                                        if (board[rb][cb].isValidMove(move, board)) {
+                                                            if (this.isDangerous(cw, rw) == false) {
+                                                                this.move(move);
+                                                                moved = true;
+                                                                //TODO: maybe implement priority system, for taking important pieces first
+
+                                                            }
+                                                        }
+
+                                                    }
+                                                }
+                                            }
+                                        }
+
+
                                     } else {//use king as last resort
-                                        foundLowestPriorityPiece = true;
-                                        rowBlack = rb;
-                                        colBlack = cb;
+                                        //foundLowestPriorityPiece = true;
+//                                            rowBlack = rb;
+//                                            colBlack = cb;
+
+                                        for (int rw = 0; rw < 8; rw++) {
+                                            for (int cw = 0; cw < 8; cw++) {
+                                                if (board[rw][cw] != null) {
+                                                    if (board[rw][cw].player() == Player.WHITE) {
+                                                        Move move = new Move(rb, cb, rw, cw);
+                                                        if (board[rb][cb].isValidMove(move, board)) {
+                                                            if (this.isDangerous(cw, rw) == false) {
+                                                                this.move(move);
+                                                                moved = true;
+                                                                //TODO: maybe implement priority system, for taking important pieces first
+
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+
                                     }
 
 
@@ -385,32 +486,126 @@ public class ChessModel implements IChessModel {
                         }
                     }
 
+                    // }
+
+
+                    System.out.println("reached: move a piece forwards");
+
+                    //move a piece forwards
+                    for (int rb = 0; rb < 8; rb++) {
+                        for (int cb = 0; cb < 8; cb++) {
+                            if (board[rb][cb] != null) {
+                                if (board[rb][cb].player() == Player.BLACK) {
+                                    if (board[rb][cb].type().equals("Pawn")) {
+
+                                        this.move(new Move(rb, cb, rb + 1, cb));
+                                        moved = true;
+
+
+
+                                    }
+                                    else if (board[rb][cb].type().equals("Knight") || board[rb][cb].type().equals("Rook") || board[rb][cb].type().equals("Bishop")){
+
+                                        for (int r = 7; r > -1; r--){
+                                            for (int c = 4; c < 8; c++){
+                                                Move move = new Move(rb, cb, r, c);
+                                                if (board[rb][cb].isValidMove(move, board)){
+                                                    this.move(move);
+                                                    moved = true;
+                                                }
+                                            }
+                                            for (int c = 3; c > -1; c--){
+                                                Move move = new Move(rb, cb, r, c);
+                                                System.out.println("move: " + rb + cb + r + c);
+                                                System.out.println("piece type: " + board[rb][cb].type());
+                                                if (board[rb][cb].isValidMove(move, board)){
+                                                    this.move(move);
+                                                    moved = true;
+                                                }
+                                            }
+                                        }
+
+
+                                    }
+                                    else if (board[rb][cb].type().equals("Queen")){
+
+                                        for (int r = 7; r > -1; r--){
+                                            for (int c = 4; c < 8; c++){
+                                                Move move = new Move(rb, cb, r, c);
+                                                if (board[rb][cb].isValidMove(move, board)){
+                                                    this.move(move);
+                                                    moved = true;
+                                                }
+                                            }
+                                            for (int c = 3; c > -1; c--){
+                                                Move move = new Move(rb, cb, r, c);
+                                                if (board[rb][cb].isValidMove(move, board)){
+                                                    this.move(move);
+                                                    moved = true;
+                                                }
+                                            }
+                                        }
+
+
+
+                                    }else{
+
+                                        for (int r = 7; r > -1; r--){
+                                            for (int c = 4; c < 8; c++){
+                                                Move move = new Move(rb, cb, r, c);
+                                                if (board[rb][cb].isValidMove(move, board)){
+                                                    this.move(move);
+                                                    moved = true;
+                                                }
+                                            }
+                                            for (int c = 3; c > -1; c--){
+                                                Move move = new Move(rb, cb, r, c);
+                                                if (board[rb][cb].isValidMove(move, board)){
+                                                    this.move(move);
+                                                    moved = true;
+                                                }
+                                            }
+                                        }
+
+
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                    System.out.println("exiting while loop, at the like, end, should not happen");
+
                 }
 
+                System.out.println("while loop has been exited, should be good? something should have moved");
+
+
+                /*
+                 * Write a simple AI set of rules in the following order.
+                 * a. Check to see if you are in check.
+                 * 		i. If so, get out of check by moving the king or placing
+                 * 		a piece to block the check
+                 *
+                 * b. Attempt to put opponent into check (or checkmate).
+                 * 		i. Attempt to put opponent into check without losing
+                 * 		your piece
+                 *		ii. Perhaps you have won the game.
+                 *
+                 *c. Determine if any of your pieces are in danger,
+                 *		i. Move them if you can.
+                 *		ii. Attempt to protect that piece.
+                 *
+                 *d. Move a piece (pawns first) forward toward opponent king
+                 *		i. check to see if that piece is in danger of being
+                 *		removed, if so, move a different piece.
+                 */
+
             }
-
-
-            /*
-             * Write a simple AI set of rules in the following order.
-             * a. Check to see if you are in check.
-             * 		i. If so, get out of check by moving the king or placing
-             * 		a piece to block the check
-             *
-             * b. Attempt to put opponent into check (or checkmate).
-             * 		i. Attempt to put opponent into check without losing
-             * 		your piece
-             *		ii. Perhaps you have won the game.
-             *
-             *c. Determine if any of your pieces are in danger,
-             *		i. Move them if you can.
-             *		ii. Attempt to protect that piece.
-             *
-             *d. Move a piece (pawns first) forward toward opponent king
-             *		i. check to see if that piece is in danger of being
-             *		removed, if so, move a different piece.
-             */
-
         }
+        System.out.println("ai method over");
     }
 
     //returns boolean value. true if the spot (row, col) can be taken by any white piece
@@ -431,18 +626,8 @@ public class ChessModel implements IChessModel {
         return false;
     }
 
-    public int[] findHighPiorityPiece(Player p){
-        for (int r = 0; r < 8; r++) {
-            for (int c = 0; c < 8; c++) {
-                if (board[r][c] != null) {
-                    if (board[r][c].player() == Player.BLACK) {
 
 
-                    }
-                }
-            }
-        }
-    }
 
 
 }
