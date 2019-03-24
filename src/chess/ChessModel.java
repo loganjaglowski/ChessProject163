@@ -125,6 +125,10 @@ public class ChessModel implements IChessModel {
         board[move.fromRow][move.fromColumn] = null;
     }
 
+    public void setPlayer(Player p){
+        player = p;
+    }
+    
     /*****************************************************************
      * A method that determines whether either king is in check.
      * @param  p {@link chess.Move} the Player being checked
