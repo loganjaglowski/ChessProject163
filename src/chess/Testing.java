@@ -20,9 +20,22 @@ public class Testing {
         assertEquals(test.pieceAt(5, 7).type(), new Bishop(Player.BLACK).type());
     }
 
-    //tests pawn movement
+    //tests white bishop
     @Test
-    public void testPawn(){
+    public void whiteLeftBishopTest(){
+        ChessModel test = new ChessModel();
+        //move pawn out of way
+        Move movePawn = new Move(6, 3, 5, 3);
+        test.move(movePawn);
+        //move bishop
+        Move moveBishop = new Move(7, 2, 6, 3);
+        test.move(moveBishop);
+        assertEquals(test.pieceAt(6, 3).type(), new Bishop(Player.WHITE).type());
+    }
+
+    //tests black pawn movement
+    @Test
+    public void testBlackPawn(){
         ChessModel test = new ChessModel();
         //move pawn out of way
         Move movePawn = new Move(1, 3, 2, 3);
@@ -30,9 +43,19 @@ public class Testing {
         assertEquals(test.pieceAt(2, 3).type(), new Pawn(Player.BLACK).type());
     }
 
-    //tests king movement
+    //tests white pawn
     @Test
-    public void kingTest(){
+    public void testWhitePawn(){
+        ChessModel test = new ChessModel();
+        //move pawn
+        Move movePawn = new Move(6, 3, 5, 3);
+        test.move(movePawn);
+        assertEquals(test.pieceAt(5, 3).type(), new Pawn(Player.WHITE).type());
+    }
+
+    //tests black king movement
+    @Test
+    public void blackKingTest(){
         ChessModel test = new ChessModel();
         //move pawn out of way of king
         Move movePawn = new Move(1, 3, 2, 3);
@@ -43,9 +66,22 @@ public class Testing {
         assertEquals(test.pieceAt(1, 3).type(), new King(Player.BLACK).type());
     }
 
-    //tests queen movement
+    //tests white king
     @Test
-    public void queenTest(){
+    public void whiteKingTest(){
+        ChessModel test = new ChessModel();
+        //move pawn out of way of king
+        Move movePawn = new Move(6, 3, 5, 3);
+        test.move(movePawn);
+        //move king
+        Move kingMove = new Move(7, 4, 6, 3);
+        test.move(kingMove);
+        assertEquals(test.pieceAt(6, 3).type(), new King(Player.WHITE).type());
+    }
+
+    //tests black queen movement
+    @Test
+    public void queenBlackTest(){
         ChessModel t = new ChessModel();
         //move pawn out of way
         Move movePawn = new Move(1, 3, 2, 3);
@@ -56,7 +92,64 @@ public class Testing {
         assertEquals(t.pieceAt(1, 3).type(), new Queen(Player.BLACK).type());
     }
 
+    //tests white queen movement
+    @Test
+    public void queenWhiteTest(){
+        ChessModel t = new ChessModel();
+        //move pawn out of way
+        Move movePawn = new Move(6, 3, 5, 3);
+        t.move(movePawn);
+        //move queen
+        Move queenMove = new Move(7, 3, 6, 3);
+        t.move(queenMove);
+        assertEquals(t.pieceAt(6, 3).type(), new Queen(Player.WHITE).type());
+    }
 
+    //tests black knight movement
+    @Test
+    public void knightBlackTest() {
+        ChessModel test = new ChessModel();
+        //move knight
+        Move knightMove = new Move(0, 1, 2, 0);
+        test.move(knightMove);
+        assertEquals(test.pieceAt(2, 0).type(), new Knight(Player.BLACK).type());
+    }
+
+    //tests white knight movement
+    @Test
+    public void WhiteKnightTest() {
+        ChessModel test = new ChessModel();
+        //move knight
+        Move knightMove = new Move(7, 6, 5, 5);
+        test.move(knightMove);
+        assertEquals(test.pieceAt(5, 5).type(), new Knight(Player.WHITE).type());
+    }
+
+    //tests black rook movement
+    @Test
+    public void rookBlackTest() {
+        ChessModel test = new ChessModel();
+        //move pawn out of way
+        Move movePawn = new Move(1, 0, 3, 0);
+        test.move(movePawn);
+        //move rook
+        Move rookMove = new Move(0, 0, 1, 0);
+        test.move(rookMove);
+        assertEquals(test.pieceAt(1, 0).type(), new Rook(Player.BLACK).type());
+    }
+
+    //test white rook
+    @Test
+    public void rookWhiteTest() {
+        ChessModel test = new ChessModel();
+        //move pawn out of way
+        Move movePawn = new Move(6, 0, 5, 0);
+        test.move(movePawn);
+        //move rook
+        Move rookMove = new Move(7, 0, 6, 0);
+        test.move(rookMove);
+        assertEquals(test.pieceAt(6, 0).type(), new Rook(Player.WHITE).type());
+    }
 
     //tests constructor and currentPlayer()
     @Test
