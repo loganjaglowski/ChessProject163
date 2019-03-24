@@ -256,7 +256,7 @@ public class ChessModel implements IChessModel {
         }
     }
     
-    /*****************************************************************
+   /*****************************************************************
      * A method that creates an AI for the human player to fight.
      *****************************************************************/
     public void AI() {
@@ -277,28 +277,39 @@ public class ChessModel implements IChessModel {
                 //find  Black King
                 int rk = 0;
                 int ck = 0;
-                while (rk < 8) {
-                    while (ck < 8) {
-                        if (board[rk][ck] != null) {
-                            if (board[rk][ck].player() == Player.BLACK) {
-                                if (board[rk][ck].type().equals("King")) {
+                boolean kingFound = false;
+                for (int row = 0; row < 8; row++) {
+                    if (kingFound)
+                        break;
+                    for (int column = 0; column < 8; column++) {
+                        if (kingFound)
+                            break;
+                        if (board[row][column] != null) {
+                            if (board[row][column].player() == Player.BLACK) {
+                                if (board[row][column].type().equals("King")) {
+                                    rk = row;
+                                    ck = column;
+                                    kingFound = true;
                                     break; //this only breaks out of the second loop but that's okay, the first only increments it
                                 }
                             }
                         }
-                        ck++;
                     }
-                    rk++;
                 }
                 //move king out of danger
                 if (this.isDangerous(rk, ck)) {//if the piece (rb, cb) is in danger
                     for (int r = 0; r < 8; r++) {
+                        if (moved)
+                            break;
                         for (int c = 0; c < 8; c++) {
+                            if (moved)
+                                break;
                             if (board[r][c] == null || board[r][c].player() == Player.WHITE) {
                                 Move m = new Move(rk, ck, r, c);
                                 if (board[rk][ck].isValidMove(m, board)) {
                                     if (this.isDangerous(r, c) == false) {  //^ searches board and checks for tile which is not dangerous
                                         this.move(m);
+                                        moved = true;
                                         break moved;
                                     }
                                 }
@@ -309,20 +320,29 @@ public class ChessModel implements IChessModel {
                 //if there the king cannot move out of danger, move another piece
                 if (board[rk][ck] != null) {
                     for (int rb = 0; rb < 8; rb++) {
+                        if (moved)
+                            break;
                         for (int cb = 0; cb < 8; cb++) {
+                            if (moved)
+                                break;
                             if (board[rb][cb] != null) {
                                 if (board[rb][cb].player() == Player.BLACK) {
                                     if (!board[rb][cb].type().equals("King")) { //finds any black piece that isn't a king
                                         for (int r = 0; r < 8; r++) {
+                                            if (moved)
+                                                break;
                                             for (int c = 0; c < 8; c++) {
+                                                if (moved)
+                                                    break;
                                                 Move move = new Move(rb, cb, r, c);
                                                 if (board[rb][cb].isValidMove(move, board)) {
                                                     this.move(move);
+                                                    saveLastMove(move);
                                                     if (this.isDangerous(rk, ck) == true) { //checks to see if king is still in danger, moves piece back if it is
-                                                        this.move(new Move(r, c, rb, cb));
+                                                        undoLastMove(move);
                                                     } else {// breaks out of loops if king has been saved, move isn't changed
-                                                        break moved;
-
+                                                        moved = true;
+                                                        break;
                                                     }
                                                 }
                                             }
@@ -336,19 +356,28 @@ public class ChessModel implements IChessModel {
             } else {
                     //attempts to remove piece from danger
                     for (int rb = 0; rb < 8; rb++) {
+                        if (moved)
+                            break;
                         for (int cb = 0; cb < 8; cb++) {
+                            if (moved)
+                                break;
                             if (board[rb][cb] != null) {
                                 if (board[rb][cb].player() == Player.BLACK) {  //^ searches board for any piece controlled by the ai
                                     if (this.isDangerous(rb, cb)) {//if the piece (rb, cb) is in danger
                                         //find a place on the board which is not dangerous
                                         for (int r = 0; r < 8; r++) {
+                                            if (moved)
+                                                break;
                                             for (int c = 0; c < 8; c++) {
+                                                if (moved)
+                                                    break;
                                                 if (board[r][c] == null || board[r][c].player() == Player.WHITE) {
                                                     Move m = new Move(rb, cb, r, c);
                                                     if (board[rb][cb].isValidMove(m, board)) {
                                                         if (this.isDangerous(r, c) == false) {
                                                             this.move(m);
-                                                            break moved;
+                                                            moved = true;
+                                                            break;
                                                         }
                                                     }
                                                 }
@@ -365,30 +394,41 @@ public class ChessModel implements IChessModel {
                     //find white King
                     int rwk = 0;
                     int cwk = 0;
-                    while (rwk < 8) {
-                        while (cwk < 8) {
-                            if (board[rwk][cwk] != null) {
-                                if (board[rwk][cwk].player() == Player.BLACK) {
-                                    if (board[rwk][cwk].type().equals("King")) {
+                    boolean whiteKingFound = false;
+                    for (int rowWhiteKing = 0; rowWhiteKing < 8; rowWhiteKing++) {
+                        if (whiteKingFound)
+                            break;
+                        for (int colWhiteKing = 0; colWhiteKing < 8; colWhiteKing++) {
+                            if (whiteKingFound)
+                                break;
+                            if (board[rowWhiteKing][colWhiteKing] != null) {
+                                if (board[rowWhiteKing][colWhiteKing].player() == Player.BLACK) {
+                                    if (board[rowWhiteKing][colWhiteKing].type().equals("King")) {
+                                        rwk = rowWhiteKing;
+                                        cwk = colWhiteKing;
+                                        whiteKingFound = true;
                                         break; //this only breaks out of the second loop but thats okay, the first only increments it
                                     }
                                 }
                             }
-                            cwk++;
                         }
-                        rwk++;
                     }
 
                     //attempt to capture the white king
                     for (int rb = 0; rb < 8; rb++) {
+                        if (moved)
+                            break;
                         for (int cb = 0; cb < 8; cb++) {
+                            if (moved)
+                                break;
                             if (board[rb][cb] != null) {
                                 if (board[rb][cb].player() == Player.BLACK) {  //^ searches board for any piece controlled by the ai
                                     //attempt to capture white king (needs info from before the .incheck if)
                                     Move move = new Move(rb, cb, rwk, cwk);
                                     if (board[rb][cb].isValidMove(move, board)) {
                                         this.move(move);
-                                        break moved;
+                                        moved = true;
+                                        break;
 
                                     }
                                 }
@@ -398,19 +438,28 @@ public class ChessModel implements IChessModel {
 
                     //try to take pieces
                     for (int rb = 0; rb < 8; rb++) {
+                        if (moved)
+                            break;
                         for (int cb = 0; cb < 8; cb++) {
+                            if (moved)
+                                break;
                             if (board[rb][cb] != null) {
                                 if (board[rb][cb].player() == Player.BLACK) {
                                     if (board[rb][cb].type().equals("Pawn")) {
                                         for (int rw = 0; rw < 8; rw++) {
+                                            if (moved)
+                                                break;
                                             for (int cw = 0; cw < 8; cw++) {
+                                                if (moved)
+                                                    break;
                                                 if (board[rw][cw] != null) {
                                                     if (board[rw][cw].player() == Player.WHITE) {
                                                         Move move = new Move(rb, cb, rw, cw);
                                                         if (board[rb][cb].isValidMove(move, board)) {
                                                             if (this.isDangerous(cw, rw) == false) {
                                                                 this.move(move);
-                                                                break moved;
+                                                                moved = true;
+                                                                break;
                                                             }
                                                         }
                                                     }
@@ -420,14 +469,19 @@ public class ChessModel implements IChessModel {
 
                                     } else if (board[rb][cb].type().equals("Knight") || board[rb][cb].type().equals("Rook") || board[rb][cb].type().equals("Bishop")) {
                                         for (int rw = 0; rw < 8; rw++) {
+                                            if (moved)
+                                                break;
                                             for (int cw = 0; cw < 8; cw++) {
+                                                if (moved)
+                                                    break;
                                                 if (board[rw][cw] != null) {
                                                     if (board[rw][cw].player() == Player.WHITE) {
                                                         Move move = new Move(rb, cb, rw, cw);
                                                         if (board[rb][cb].isValidMove(move, board)) {
                                                             if (this.isDangerous(cw, rw) == false) {
                                                                 this.move(move);
-                                                                break moved;
+                                                                moved = true;
+                                                                break;
                                                             }
                                                         }
                                                     }
@@ -437,14 +491,19 @@ public class ChessModel implements IChessModel {
 
                                     } else if (board[rb][cb].type().equals("Queen")) {
                                         for (int rw = 0; rw < 8; rw++) {
+                                            if (moved)
+                                                break;
                                             for (int cw = 0; cw < 8; cw++) {
+                                                if (moved)
+                                                    break;
                                                 if (board[rw][cw] != null) {
                                                     if (board[rw][cw].player() == Player.WHITE) {
                                                         Move move = new Move(rb, cb, rw, cw);
                                                         if (board[rb][cb].isValidMove(move, board)) {
                                                             if (this.isDangerous(cw, rw) == false) {
                                                                 this.move(move);
-                                                                break moved;
+                                                                moved = true;
+                                                                break;
                                                             }
                                                         }
                                                     }
@@ -453,14 +512,19 @@ public class ChessModel implements IChessModel {
                                         }
                                     } else {//use king as last resort
                                         for (int rw = 0; rw < 8; rw++) {
+                                            if (moved)
+                                                break;
                                             for (int cw = 0; cw < 8; cw++) {
+                                                if (moved)
+                                                    break;
                                                 if (board[rw][cw] != null) {
                                                     if (board[rw][cw].player() == Player.WHITE) {
                                                         Move move = new Move(rb, cb, rw, cw);
                                                         if (board[rb][cb].isValidMove(move, board)) {
                                                             if (this.isDangerous(cw, rw) == false) {
                                                                 this.move(move);
-                                                                break moved;
+                                                                moved = true;
+                                                                break;
                                                             }
                                                         }
                                                     }
@@ -475,13 +539,26 @@ public class ChessModel implements IChessModel {
 
                     //move a piece forwards
                     for (int rb = 0; rb < 8; rb++) {
+                        if (moved)
+                            break;
                         for (int cb = 0; cb < 8; cb++) {
+                            if (moved)
+                                break;
                             if (board[rb][cb] != null) {
                                 if (board[rb][cb].player() == Player.BLACK) {
                                     if (board[rb][cb] instanceof Pawn) {
                                         if (rb != 7) {
-                                            this.move(new Move(rb, cb, rb + 1, cb));
-                                            break moved;
+                                            Move move = new Move(rb, cb, rb + 1, cb);
+                                            if (board[rb][cb].isValidMove(move, board)) {
+                                                move(move);
+                                                if (!inCheck(Player.BLACK) && !isDangerous(rb + 1, cb)) {
+                                                    moved = true;
+                                                    break;
+                                                }
+                                                else {
+                                                    undoLastMove(move);
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -491,23 +568,35 @@ public class ChessModel implements IChessModel {
 
                     //use knights, rooks, and bishops after pawns
                     for (int rb = 0; rb < 8; rb++) {
+                        if (moved)
+                            break;
                         for (int cb = 0; cb < 8; cb++) {
+                            if (moved)
+                                break;
                             if (board[rb][cb] != null) {
                                 if (board[rb][cb].player() == Player.BLACK) {
                                     if (board[rb][cb].type().equals("Knight") || board[rb][cb].type().equals("Rook") || board[rb][cb].type().equals("Bishop")) {
                                         for (int r = 7; r > -1; r--) {
+                                            if (moved)
+                                                break;
                                             for (int c = 4; c < 8; c++) {
+                                                if (moved)
+                                                    break;
                                                 Move move = new Move(rb, cb, r, c);
                                                 if (board[rb][cb].isValidMove(move, board)) {
                                                     this.move(move);
-                                                    break moved;
+                                                    moved = true;
+                                                    break;
                                                 }
                                             }
                                             for (int c = 3; c > -1; c--) {
+                                                if (moved)
+                                                    break;
                                                 Move move = new Move(rb, cb, r, c);
                                                 if (board[rb][cb].isValidMove(move, board)) {
                                                     this.move(move);
-                                                    break moved;
+                                                    moved = true;
+                                                    break;
                                                 }
                                             }
                                         }
@@ -518,23 +607,34 @@ public class ChessModel implements IChessModel {
                     }
                     //use the queen after knights, rooks and bishops
                     for (int rb = 0; rb < 8; rb++) {
+                        if (moved)
+                            break;
                         for (int cb = 0; cb < 8; cb++) {
+                            if (moved)
+                                break;
                             if (board[rb][cb] != null) {
                                 if (board[rb][cb].player() == Player.BLACK) {
                                     if (board[rb][cb].type().equals("Queen")) {
                                         for (int r = 7; r > -1; r--) {
+                                            if (moved)
+                                                break;
                                             for (int c = 4; c < 8; c++) {
+                                                if (moved)
+                                                    break;
                                                 Move move = new Move(rb, cb, r, c);
                                                 if (board[rb][cb].isValidMove(move, board)) {
                                                     this.move(move);
-                                                    break moved;
+                                                    moved = true;
                                                 }
                                             }
                                             for (int c = 3; c > -1; c--) {
+                                                if (moved)
+                                                    break;
                                                 Move move = new Move(rb, cb, r, c);
                                                 if (board[rb][cb].isValidMove(move, board)) {
                                                     this.move(move);
-                                                    break moved;
+                                                    moved = true;
+                                                    break;
                                                 }
                                             }
                                         }
@@ -545,22 +645,33 @@ public class ChessModel implements IChessModel {
                     }
                     //use king as a last resort
                     for (int rb = 0; rb < 8; rb++) {
+                        if (moved)
+                            break;
                         for (int cb = 0; cb < 8; cb++) {
+                            if (moved)
+                                break;
                             if (board[rb][cb] != null) {
                                 if (board[rb][cb].player() == Player.BLACK) {
                                     for (int r = 7; r > -1; r--) {
+                                        if (moved)
+                                            break;
                                         for (int c = 4; c < 8; c++) {
+                                            if (moved)
+                                                break;
                                             Move move = new Move(rb, cb, r, c);
                                             if (board[rb][cb].isValidMove(move, board)) {
                                                 this.move(move);
-                                                break moved;
+                                                moved = true;
                                             }
                                         }
                                         for (int c = 3; c > -1; c--) {
+                                            if (moved)
+                                                break;
                                             Move move = new Move(rb, cb, r, c);
                                             if (board[rb][cb].isValidMove(move, board)) {
                                                 this.move(move);
-                                                break moved;
+                                                moved = true;
+                                                break;
                                             }
                                         }
                                     }
