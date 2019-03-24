@@ -270,14 +270,6 @@ public class ChessPanel extends JPanel {
         }else{
             AIisActive = false;
         }
-
-
-
-//        JOptionPane ai = new JOptionPane();
-//        ai.showMessageDialog(null, "One player or two?");
-//        JButton one = new JButton("one player");
-//        JButton two = new JButton("two players");
-
     }
 
 
