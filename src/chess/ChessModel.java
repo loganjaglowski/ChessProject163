@@ -217,65 +217,32 @@ public class ChessModel implements IChessModel {
 
         System.out.println("Ai is active");
 
-        if (firstTurn == true){    
+        if (firstTurn == true){
             this.move(new Move(1, 1, 3, 1 ));
             firstTurn = false;
         }else {
 
-            //attempts to remove piece from danger
-            //TODO: priority system to save more important pieces first (if i get everything else done, which probably will not happen)
-            for (int rb = 0; rb < 8; rb++) {
-                for (int cb = 0; cb < 8; cb++) {
-                    if (board[rb][cb] != null) {
-                        if (board[rb][cb].player() == Player.BLACK) {  //^ searches board for any piece controlled by the ai
-                            if (this.isDangerous(rb, cb)) {//if the piece (rb, cb) is in danger
-                                System.out.println(board[rb][cb].type() + "is in danger, first check");
-                                for (int r = 0; r < 8; r++) {
-                                    for (int c = 0; c < 8; c++) {
-                                        if (board[r][c] == null || board[r][c].player() == Player.WHITE){
-                                            System.out.println("the spot that it is checking is available");
-                                            Move m = new Move(rb, cb, r, c);
-                                            System.out.println(board[rb][cb].type() + " is attempting to move from: " + rb + ", " + cb + " to: " + r + ", " + c);
-                                            if (board[rb][cb].isValidMove(m, board)){
-                                                System.out.println("it can move to that spot");
-                                                if (this.isDangerous(r, c) == false) {  //^ searches board and checks for tile which is not dangerous
-                                                    System.out.println("from: " + rb + ", " + cb + "to: " + r + ", " + c);
-                                                    System.out.println("piece: " + board[rb][cb].type());
-                                                    this.move(m);
-                                                    r = 7;
-                                                    c = 7;
-
-                                                }else{
-                                                    System.out.println("piece: " + board[rb][cb].type() + "is in danger, second check, on: " +  r + ", " + c);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+            //find King
+            int rk = 0;
+            int ck = 0;
+            while (rk < 8) {
+                while (ck < 8) {
+                    if (board[rk][ck] != null) {
+                        if (board[rk][ck].player() == Player.BLACK) {
+                            if (board[rk][ck].type().equals("King")) {
+                                break; //this only breaks out of the second loop but thats okay, the first only increments it
                             }
                         }
                     }
+                    ck++;
                 }
+                rk++;
             }
 
+
+
             //get out of check
-            if (this.inCheck(Player.BLACK)){
-                //find King
-                int rk = 0;
-                int ck = 0;
-                while (rk < 8) {
-                    while (ck < 8) {
-                        if (board[rk][ck] != null) {
-                            if (board[rk][ck].player() == Player.BLACK) {
-                                if (board[rk][ck].type().equals("King")) {
-                                    break;
-                                }
-                            }
-                        }
-                        ck++;
-                    }
-                    rk++;
-                }
+            if (this.inCheck(Player.BLACK)) {
 
                 //move king out of danger
                 if (this.isDangerous(rk, ck)) {//if the piece (rb, cb) is in danger
@@ -307,15 +274,15 @@ public class ChessModel implements IChessModel {
                         for (int cb = 0; cb < 8; cb++) {
                             if (board[rb][cb] != null) {
                                 if (board[rb][cb].player() == Player.BLACK) {
-                                    if (!board[rb][cb].type().equals("King")){ //finds any black piece that isnt a king
-                                        for (int r = 0; r < 8; r++){
-                                            for (int c = 0; c < 8; c++){
+                                    if (!board[rb][cb].type().equals("King")) { //finds any black piece that isnt a king
+                                        for (int r = 0; r < 8; r++) {
+                                            for (int c = 0; c < 8; c++) {
                                                 Move move = new Move(rb, cb, r, c);
-                                                if (board[rb][cb].isValidMove(move, board)){
+                                                if (board[rb][cb].isValidMove(move, board)) {
                                                     this.move(move);
-                                                    if (this.isDangerous(rk, ck) == true){ //checks to see if king is still in danger, moves piece back if it is
+                                                    if (this.isDangerous(rk, ck) == true) { //checks to see if king is still in danger, moves piece back if it is
                                                         this.move(new Move(r, c, rb, cb));
-                                                    }else{// breaks out of loops if king has been saved
+                                                    } else {// breaks out of loops if king has been saved
                                                         c = 7;
                                                         r = 7;
                                                         cb = 7;
@@ -330,13 +297,97 @@ public class ChessModel implements IChessModel {
                         }
                     }
                 }
+            } else {
+                boolean moved = false;
+                while (moved == true) {
+                    //attempts to remove piece from danger
+                    //TODO: priority system to save more important pieces first (if i get everything else done, which probably will not happen)
+                    for (int rb = 0; rb < 8; rb++) {
+                        for (int cb = 0; cb < 8; cb++) {
+                            if (board[rb][cb] != null) {
+                                if (board[rb][cb].player() == Player.BLACK) {  //^ searches board for any piece controlled by the ai
+                                    if (this.isDangerous(rb, cb)) {//if the piece (rb, cb) is in danger
+
+
+                                        //find a place on the board which is not dangerous
+                                        for (int r = 0; r < 8; r++) {
+                                            for (int c = 0; c < 8; c++) {
+                                                if (board[r][c] == null || board[r][c].player() == Player.WHITE) {
+                                                    Move m = new Move(rb, cb, r, c);
+                                                    if (board[rb][cb].isValidMove(m, board)) {
+                                                        if (this.isDangerous(r, c) == false) {
+                                                            this.move(m);
+                                                            moved = true;
+
+
+                                                            //break out of loops
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
 
 
 
+                                    }else{
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    //attempt to capture white king (needs info from before the .incheck if)
+                    Move move = new Move(rb, cb, rk, ck);
+                    if (board[rb][cb].isValidMove(move, board)) {
+                        this.move(move);
+                        moved = true;
+                    }
+
+                }
+
+
+
+
+
+
+                //advance pieces and maybe try to take pieces
+                //find lowest priority piece
+                boolean foundLowestPriorityPiece = false;
+                int rowBlack = 0;
+                int colBlack = 0;
+                while (foundLowestPriorityPiece == false) {
+                    for (int rb = 0; rb < 8; rb++) {
+                        for (int cb = 0; cb < 8; cb++) {
+                            if (board[rb][cb] != null) {
+                                if (board[rb][cb].player() == Player.BLACK) {
+                                    if (board[rb][cb].type().equals("Pawn")) {
+                                        foundLowestPriorityPiece = true;
+                                        rowBlack = rb;
+                                        colBlack = cb;
+                                    } else if (board[rb][cb].type().equals("Knight") || board[rb][cb].type().equals("Rook") || board[rb][cb].type().equals("Bishop")) {
+                                        foundLowestPriorityPiece = true;
+                                        rowBlack = rb;
+                                        colBlack = cb;
+                                    } else if (board[rb][cb].type().equals("Queen")) {
+                                        foundLowestPriorityPiece = true;
+                                        rowBlack = rb;
+                                        colBlack = cb;
+                                    } else {//use king as last resort
+                                        foundLowestPriorityPiece = true;
+                                        rowBlack = rb;
+                                        colBlack = cb;
+                                    }
+
+
+                                }
+                            }
+                        }
+                    }
+
+                }
 
             }
-
-
 
 
             /*
@@ -380,7 +431,18 @@ public class ChessModel implements IChessModel {
         return false;
     }
 
+    public int[] findHighPiorityPiece(Player p){
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                if (board[r][c] != null) {
+                    if (board[r][c].player() == Player.BLACK) {
 
+
+                    }
+                }
+            }
+        }
+    }
 
 
 }
