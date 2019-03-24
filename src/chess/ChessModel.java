@@ -1,5 +1,7 @@
 package chess;
 
+import javax.swing.JOptionPane;
+
 //ai: look for a white piece, look for a black piece, see if in danger. (attemptToRemoveFromDanger)
 
 public class ChessModel implements IChessModel {
@@ -207,6 +209,46 @@ public class ChessModel implements IChessModel {
         board[row][column] = piece;
     }
 
+     public void pawnPromoted(Move move) {
+        if (board[move.toRow][move.toColumn].type().equals("Pawn") &&
+                (move.toRow == 0 || move.toRow == 7)){
+            String[] promotion = {"Queen", "Knight", "Rook", "Bishop"};
+            int pick = JOptionPane.showOptionDialog(null, "Pick which"
+                            + " piece you would like to promote to: ",
+                    "", JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE, null, promotion,
+                    promotion[0]);
+            if (pick == 0) {
+                board[move.toRow][move.toColumn] = new Queen(player);
+            }
+            if (pick == 1) {
+                board[move.toRow][move.toColumn] = new Knight(player);
+            }
+            if (pick == 2) {
+                board[move.toRow][move.toColumn] = new Rook(player);
+            }
+            if (pick == 3) {
+                board[move.toRow][move.toColumn] = new Bishop(player);
+            }
+
+        }
+    }
+    
+    public void rookCastling (Move move){
+        if (board[move.toRow][move.toColumn].type().equals("King") &&
+                Math.abs(move.fromColumn - move.toColumn) == 2){
+            if (move.toColumn < move.fromColumn){
+                board[move.fromRow][move.fromColumn - 1] =
+                        board[move.fromRow][move.fromColumn - 4];
+                board[move.fromRow][move.fromColumn - 4] = null;
+            } else {
+                board[move.fromRow][move.fromColumn + 1] =
+                        board[move.fromRow][move.fromColumn + 3];
+                board[move.fromRow][move.fromColumn + 3] = null;
+            }
+        }
+    }
+    
     /*****************************************************************
      * A method that creates an AI for the human player to fight.
      *****************************************************************/

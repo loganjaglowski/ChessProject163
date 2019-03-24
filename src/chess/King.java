@@ -28,9 +28,48 @@ public class King extends ChessPiece {
      *****************************************************************/
     public boolean isValidMove(Move move, IChessPiece[][] board) {
         boolean valid = false;
+        boolean moved = false;
 
         //checks if attempted move is within one square of king
         if(super.isValidMove(move, board)){
+
+            //castling
+            if (Math.abs(move.fromColumn - move.toColumn) == 2 && !moved){
+                //castling to the left
+                if (move.toColumn < move.fromColumn){
+                    if (board[move.toRow][move.toColumn - 2] != null &&
+                            board[move.toRow][move.toColumn - 2].type()
+                                    .equals("Rook")){
+                        Rook rook = (Rook) board[move.toRow]
+                                [move.toColumn - 2];
+                        if (!rook.hasMoved()){
+                            for (int i = 1; i < 4; i++){
+                                if (board[move.fromRow][move.fromColumn - i]
+                                        != null){
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }
+                    }
+                    //castling to the right
+                } else {
+                    if (board[move.toRow][move.toColumn + 1].type()
+                            .equals("Rook")){
+                        Rook rook = (Rook) board[move.toRow]
+                                [move.toColumn + 1];
+                        if (!rook.hasMoved()){
+                            for (int i = 1; i < 3; i++){
+                                if (board[move.fromRow][move.fromColumn + i]
+                                        != null){
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
                 //checks upper left square
                 if (move.toRow == move.fromRow - 1 &&
                         move.toColumn == move.fromColumn - 1) {
@@ -65,6 +104,7 @@ public class King extends ChessPiece {
                     valid = true;
                 }
             }
+        moved = true;
         return valid;
     }
 }

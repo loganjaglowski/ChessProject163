@@ -6,6 +6,9 @@ import javax.swing.*;
 
 public class ChessPanel extends JPanel {
 
+    /** Used for saving and loading games */
+    private StateOfTheGame state;
+    
     /** A board of buttons */
     private JButton[][] board;
 
@@ -101,6 +104,7 @@ public class ChessPanel extends JPanel {
         add(boardpanel, BorderLayout.WEST);
         boardpanel.setPreferredSize(new Dimension(600, 600));
         add(buttonpanel);
+        state = new StateOfTheGame(model);
         firstTurnFlag = true;
     }
 
@@ -266,8 +270,8 @@ public class ChessPanel extends JPanel {
     // inner class that represents action listener for buttons
     private class listener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            for (int r = 0; r < model.numRows(); r++)
-                for (int c = 0; c < model.numColumns(); c++)
+            for (int r = 0; r < model.numRows(); r++) {
+                for (int c = 0; c < model.numColumns(); c++) {
                     if (board[r][c] == event.getSource()) {
                         if (firstTurnFlag) {
                             fromRow = r;
@@ -281,14 +285,23 @@ public class ChessPanel extends JPanel {
                             Move m = new Move(fromRow, fromCol, toRow,
                                     toCol);
                             if ((model.isValidMove(m))) {
+                                state.saveState(model);
                                 model.move(m);
+                                model.rookCastling(m);
+                                model.pawnPromoted(m);
                                 model.setNextPlayer();
                                 displayBoard();
                             }
                         }
-                    }else if(undoBtn == event.getSource()){
-                        //fixme: UNDO, maybe model.undo(); ?
                     }
+                }
+            }
+            if(undoBtn == event.getSource()){
+                model = state.loadState();
+                if (!state.checkIfBeginningModel())
+                    state.incrementState();
+                displayBoard();
+            }
         }
     }
 }
