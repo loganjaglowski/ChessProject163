@@ -287,6 +287,8 @@ public class ChessPanel extends JPanel {
                             if ((model.isValidMove(m))) {
                                 state.saveState(model);
                                 model.move(m);
+                                model.rookCastling(m);
+                                model.pawnPromoted(m);
                                 model.setNextPlayer();
                                 displayBoard();
                             }
