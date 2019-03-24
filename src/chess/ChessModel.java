@@ -12,6 +12,13 @@ public class ChessModel implements IChessModel {
     private Player player;
 
     private boolean firstTurn = true;
+    
+    private IChessPiece saveFromPiece;
+    private int saveFromRow;
+    private int saveFromColumn;
+    private IChessPiece saveToPiece;
+    private int saveToRow;
+    private int saveToColumn;
 
     /*****************************************************************
      * A constructor that creates the chess model.
@@ -94,6 +101,25 @@ public class ChessModel implements IChessModel {
         }
         return valid;
     }
+    
+    public void saveLastMove(Move m) {
+        saveFromPiece = board[m.fromRow][m.fromColumn];
+        saveFromRow = m.fromRow;
+        saveFromColumn = m.fromColumn;
+        saveToPiece = board[m.toRow][m.toColumn];
+        saveToRow = m.toRow;
+        saveToColumn = m.fromRow;
+    }
+
+    public void undoLastMove(Move m) {
+        board[m.fromRow][m.fromColumn] = saveFromPiece;
+        m.fromRow = saveFromRow;
+        m.fromColumn = saveFromColumn;
+        board[m.toRow][m.toColumn] = saveToPiece;
+        m.toRow = saveToRow;
+        m.toColumn = saveToColumn;
+    }
+
 
     /*****************************************************************
      * A method that decides whether the given move is valid.
