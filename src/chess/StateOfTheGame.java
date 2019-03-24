@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class StateOfTheGame {
     private ArrayList<ChessModel> state;
-    int currentState = 0;
-    int totalStates = 0;
+    private int currentState = 0;
+    private int totalStates = 0;
     private ChessModel beginningModel;
 
 
@@ -22,6 +22,7 @@ public class StateOfTheGame {
         state.add(0, beginningModel);
         totalStates++;
     }
+
     public void saveState (ChessModel model) {
         if (currentState > 0) {
             for (int delete = 0; delete < currentState; delete++) {
