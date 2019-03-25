@@ -2,6 +2,15 @@ package chess;
 
 public class Pawn extends ChessPiece {
 
+   public boolean hasDoneEnPassant = false;
+   public boolean hasCapturedEnpassant = false;
+   public int capturedRow;
+   public int capturedCol;
+
+    public boolean isHasDoneEnPassant() {
+        return hasDoneEnPassant;
+    }
+
     /******************************************************************
      * A method that calls the super class method.
      * @param player the player being used
@@ -32,11 +41,14 @@ public class Pawn extends ChessPiece {
         //checks super class method
         if (super.isValidMove(move, board)){
 
-            //TODO: enable moving diagonally when pawn is capturing another pawn en passant
+            hasDoneEnPassant = false;
+
             //first if controls diagonal movement when capturing
             if (board[move.toRow][move.toColumn] != null) {
                 if ((board[move.toRow][move.toColumn]).player() != super.player()) {
-                    if (move.fromColumn - move.toColumn > 1 || move.fromColumn - move.toColumn < -1) {
+                    if (move.fromColumn - move.toColumn == 1 || move.fromColumn - move.toColumn == -1) {
+                        valid = true;
+                    }else{
                         valid = false;
                     }
                 }
@@ -47,35 +59,71 @@ public class Pawn extends ChessPiece {
             }
             if (super.player() == Player.BLACK) {
                 if (this.isEnPassant(move)) {
-
                     if (move.fromRow - move.toRow < -2 || move.fromRow - move.toRow > -1) {
-
                         valid = false;
+
+                    }else{
+                        if (board[move.toRow][move.toColumn] != null){
+                            valid = false;
+                        }else{
+                            hasDoneEnPassant = true;
+                        }
                     }
                 } else {
-
                     if (move.fromRow - move.toRow != -1) {
                         valid = false;
                     }
                 }
             }else{
                 if (this.isEnPassant(move)) {
-
                     if (move.fromRow - move.toRow > 2 || move.fromRow - move.toRow < 1) {
                         valid = false;
-
+                    }else{
+                        if (board[move.toRow][move.toColumn] != null){
+                            valid = false;
+                        }else{
+                            hasDoneEnPassant = true;
+                        }
                     }
                 } else {
-
                     if (move.fromRow - move.toRow != 1) {
                         valid = false;
                     }
                 }
             }
+            if ( move.fromColumn - move.toColumn == -1){
+                if (board[move.fromRow][move.toColumn] != null){
+                    if (board[move.fromRow][move.toColumn].type().equals("Pawn")){
+                        Pawn temp = (Pawn) board[move.fromRow][move.toColumn];
+                        if ( temp.hasDoneEnPassant == true){
+                            hasCapturedEnpassant = true;
+                            capturedRow = move.fromRow;
+                            capturedCol = move.toColumn;
+                            valid = true;
+                        }
+                    }
+
+                }
+            }
+
+            if ( move.fromColumn - move.toColumn == 1) {
+                if (board[move.fromRow][move.toColumn] != null){
+                    if (board[move.fromRow][move.toColumn].type().equals("Pawn")){
+                        Pawn temp = (Pawn) board[move.fromRow][move.toColumn];
+                        if ( temp.hasDoneEnPassant == true){
+                            hasCapturedEnpassant = true;
+                            capturedRow = move.fromRow;
+                            capturedCol = move.toColumn;
+                            valid = true;
+                        }
+                    }
+                }
+
+            }
         }else{
             valid = false;
         }
-
+        
         return valid;
     }
 

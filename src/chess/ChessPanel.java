@@ -298,7 +298,7 @@ public class ChessPanel extends JPanel {
                             fromCol = c;
 
                             firstTurnFlag = false;
-                        } else {
+                        }else{
                             toRow = r;
                             toCol = c;
                             firstTurnFlag = true;
@@ -309,6 +309,12 @@ public class ChessPanel extends JPanel {
                                 model.move(m);
                                 model.rookCastling(m);
                                 model.pawnPromoted(m);
+                                if (model.pieceAt(r, c).type().equals("Pawn")){
+                                    Pawn temp = (Pawn) model.pieceAt(r, c);
+                                    if (temp.hasCapturedEnpassant == true){
+                                        model.removeFromBoard(temp.capturedRow, temp.capturedCol);
+                                    }
+                                }
                                 displayBoard();
                                 if (AIisActive){
                                     model.AI();
