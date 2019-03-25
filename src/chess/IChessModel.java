@@ -16,13 +16,12 @@ public interface IChessModel {
      *
      * @param move a {@link chess.Move} object describing the move to
      * be made.
-     * @return {@code true} if the proposed move is valid, {@code
-     * false} otherwise.
+     * @return an {@link chess.GameStatus} representing values.
      * @throws IndexOutOfBoundsException if either {@code [move.
      * fromRow, move.fromColumn]} or {@code [move.toRow,
      * move.toColumn]} don't represent valid locations on the board.
      *****************************************************************/
-    boolean isValidMove(Move move);
+    GameStatus isValidMove(Move move);
 
     /*****************************************************************
      * Moves the piece from location {@code [move.fromRow, move.

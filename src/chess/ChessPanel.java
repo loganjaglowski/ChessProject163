@@ -298,31 +298,50 @@ public class ChessPanel extends JPanel {
                             fromCol = c;
 
                             firstTurnFlag = false;
-                        }else{
+                        } else {
                             toRow = r;
                             toCol = c;
                             firstTurnFlag = true;
                             Move m = new Move(fromRow, fromCol, toRow,
                                     toCol);
-                            if ((model.isValidMove(m))) {
-                                state.saveState(model);
-                                model.move(m);
-                                model.rookCastling(m);
-                                model.pawnPromoted(m);
-                                if (model.pieceAt(r, c).type().equals("Pawn")){
-                                    Pawn temp = (Pawn) model.pieceAt(r, c);
-                                    if (temp.hasCapturedEnpassant == true){
-                                        model.removeFromBoard(temp.capturedRow, temp.capturedCol);
-                                    }
-                                }
-                                displayBoard();
-                                if (AIisActive){
+
+                            //when move completes game
+                            if(model.isValidMove(m).isComplete()){
+                                JOptionPane.showMessageDialog(null, "Game complete");
+                            }
+                            //when move is into check fixme: how is move prevented?
+                            if(model.isValidMove(m).isMovedIntoCheck()){
+                                JOptionPane.showMessageDialog(null, "Cannot move into check");
+                            }
+                            //when move puts player into check
+                            if(model.isValidMove(m).isInCheck()){
+                                JOptionPane.showMessageDialog(null, model.currentPlayer() + "is in check");
+                            }
+                            //insert ifs and dialog boxes
+                             if ((model.isValidMove(m).isMoveSuccessful())) {
+                                if (AIisActive) {
+                                    state.saveState(model);
+                                    model.move(m);
+                                    model.rookCastling(m);
+                                    model.pawnPromoted(m);
                                     model.AI();
+                                    if (model.pieceAt(r, c).type().equals("Pawn")){
+                                        Pawn temp = (Pawn) model.pieceAt(r, c);
+                                        if (temp.hasCapturedEnpassant == true){
+                                            model.removeFromBoard(temp.capturedRow, temp.capturedCol);
+                                        }
+                                    }
                                     displayBoard();
                                 }else{
+                                    state.saveState(model);
+                                    model.move(m);
+                                    model.rookCastling(m);
+                                    model.pawnPromoted(m);
                                     model.setNextPlayer();
-
+                                    displayBoard();
                                 }
+                            }else{
+                                JOptionPane.showMessageDialog(null, "Move invalid");
                             }
                         }
                     }

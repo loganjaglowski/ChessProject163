@@ -52,11 +52,12 @@ public class Pawn extends ChessPiece {
                         valid = false;
                     }
                 }
-            }else {
-                if (move.fromColumn - move.toColumn != 0) {
+                if (move.fromColumn - move.toColumn == 0) {
                     valid = false;
                 }
             }
+            if (move.fromColumn - move.toColumn != 0 && board[move.toRow][move.toColumn] == null)
+                valid = false;
             if (super.player() == Player.BLACK) {
                 if (this.isEnPassant(move)) {
                     if (move.fromRow - move.toRow < -2 || move.fromRow - move.toRow > -1) {
