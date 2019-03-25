@@ -94,21 +94,13 @@ public class ChessModel implements IChessModel {
         }
         return valid;
     }
-
-    /******************************************************************
-     * A method that saves the previous move for undo capability.
-     * @param m the move to be saved
-     *****************************************************************/
+    
     public void saveLastMove(Move m) {
         oldPiece = board[m.toRow][m.toColumn];
         board[m.toRow][m.toColumn] = board[m.fromRow][m.fromColumn];
         board[m.fromRow][m.fromColumn] = null;
     }
 
-    /******************************************************************
-     * A method that undoes the previous move.
-     * @param m move to be undone
-     *****************************************************************/
     public void undoLastMove(Move m) {
         board[m.fromRow][m.fromColumn] = board[m.toRow][m.toColumn];
         board[m.toRow][m.toColumn] = oldPiece;
@@ -124,6 +116,7 @@ public class ChessModel implements IChessModel {
         GameStatus status = new GameStatus();
 
         //uses polymorphic isValidMove() from super class
+        if (board[move.fromRow][move.fromColumn] != null && move != null)
         if (board[move.fromRow][move.fromColumn].isValidMove(move,
                 board)){
 
@@ -140,7 +133,9 @@ public class ChessModel implements IChessModel {
             //temporary move to test inCheck conditions
             Move m = new Move(move.fromRow, move.fromColumn, move.toRow,
                     move.toColumn);
-            move(m); //method call to do move
+            toPiece = board[m.toRow][m.toColumn];
+            board[m.toRow][m.toColumn] = board[m.fromRow][m.fromColumn];
+            board[m.fromRow][m.fromColumn] = null; //method call to do move
 
             //determines if the new location put the player in check
             if(inCheck(currentPlayer())) {
@@ -148,9 +143,9 @@ public class ChessModel implements IChessModel {
             }else{
                 status.setMoveSuccessful(true);
             }
-            //unmoves pieces (unsure if this is correct place for this code?)
-            board[move.fromRow][move.fromColumn] = fromPiece;
-            board[move.toRow][move.toColumn] = toPiece;
+
+            board[m.fromRow][m.fromColumn] = board[m.toRow][m.toColumn];
+            board[m.toRow][m.toColumn] = toPiece;
         }
 
         return status;
@@ -361,9 +356,12 @@ public class ChessModel implements IChessModel {
                                 Move m = new Move(rk, ck, r, c);
                                 if (board[rk][ck].isValidMove(m, board)) {
                                     if (this.isDangerous(r, c) == false) {  //^ searches board and checks for tile which is not dangerous
-                                        this.move(m);
-                                        moved = true;
-                                        break moved;
+                                        saveLastMove(m);
+                                        if (!inCheck(Player.BLACK)) {
+                                            moved = true;
+                                            break;
+                                        }
+                                        undoLastMove(m);
                                     }
                                 }
                             }
@@ -390,11 +388,11 @@ public class ChessModel implements IChessModel {
                                                 Move move = new Move(rb, cb, r, c);
                                                 if (board[rb][cb].isValidMove(move, board)) {
                                                     saveLastMove(move);
-                                                    if (this.isDangerous(rk, ck) == true) { //checks to see if king is still in danger, moves piece back if it is
-                                                        undoLastMove(move);
-                                                    } else {// breaks out of loops if king has been saved, move isn't changed
+                                                    if (!inCheck(Player.BLACK)) { //checks to see if king is still in danger, moves piece back if it is
                                                         moved = true;
                                                         break;
+                                                    } else {// breaks out of loops if king has been saved, move isn't changed
+                                                        undoLastMove(move);
                                                     }
                                                 }
                                             }
@@ -481,10 +479,12 @@ public class ChessModel implements IChessModel {
                                     //attempt to capture white king (needs info from before the .incheck if)
                                     Move move = new Move(rb, cb, rwk, cwk);
                                     if (board[rb][cb].isValidMove(move, board)) {
-                                        this.move(move);
-                                        moved = true;
-                                        break;
-
+                                        saveLastMove(move);
+                                        if(!inCheck(Player.BLACK)) {
+                                            moved = true;
+                                            break;
+                                        }
+                                        undoLastMove(move);
                                     }
                                 }
                             }
@@ -512,9 +512,12 @@ public class ChessModel implements IChessModel {
                                                         Move move = new Move(rb, cb, rw, cw);
                                                         if (board[rb][cb].isValidMove(move, board)) {
                                                             if (this.isDangerous(cw, rw) == false) {
-                                                                this.move(move);
-                                                                moved = true;
-                                                                break;
+                                                                saveLastMove(move);
+                                                                if(!inCheck(Player.BLACK)) {
+                                                                    moved = true;
+                                                                    break;
+                                                                }
+                                                                undoLastMove(move);
                                                             }
                                                         }
                                                     }
@@ -534,9 +537,12 @@ public class ChessModel implements IChessModel {
                                                         Move move = new Move(rb, cb, rw, cw);
                                                         if (board[rb][cb].isValidMove(move, board)) {
                                                             if (this.isDangerous(cw, rw) == false) {
-                                                                this.move(move);
-                                                                moved = true;
-                                                                break;
+                                                                saveLastMove(move);
+                                                                if (!inCheck(Player.BLACK)) {
+                                                                    moved = true;
+                                                                    break;
+                                                                }
+                                                                undoLastMove(move);
                                                             }
                                                         }
                                                     }
@@ -556,9 +562,12 @@ public class ChessModel implements IChessModel {
                                                         Move move = new Move(rb, cb, rw, cw);
                                                         if (board[rb][cb].isValidMove(move, board)) {
                                                             if (this.isDangerous(cw, rw) == false) {
-                                                                this.move(move);
-                                                                moved = true;
-                                                                break;
+                                                                saveLastMove(move);
+                                                                if(!inCheck(Player.BLACK)) {
+                                                                    moved = true;
+                                                                    break;
+                                                                }
+                                                                undoLastMove(move);
                                                             }
                                                         }
                                                     }
@@ -577,9 +586,12 @@ public class ChessModel implements IChessModel {
                                                         Move move = new Move(rb, cb, rw, cw);
                                                         if (board[rb][cb].isValidMove(move, board)) {
                                                             if (this.isDangerous(rw, cw) == false) {
-                                                                this.move(move);
-                                                                moved = true;
-                                                                break;
+                                                                saveLastMove(move);
+                                                                if(!inCheck(Player.BLACK)) {
+                                                                    moved = true;
+                                                                    break;
+                                                                }
+                                                                undoLastMove(move);
                                                             }
                                                         }
                                                     }
@@ -605,7 +617,7 @@ public class ChessModel implements IChessModel {
                                         if (rb != 7) {
                                             Move move = new Move(rb, cb, rb + 1, cb);
                                             if (board[rb][cb].isValidMove(move, board)) {
-                                                move(move);
+                                                saveLastMove(move);
                                                 if (!inCheck(Player.BLACK) && !isDangerous(rb + 1, cb)) {
                                                     moved = true;
                                                     break;
@@ -636,10 +648,13 @@ public class ChessModel implements IChessModel {
                                                 if (moved)
                                                     break;
                                                 Move move = new Move(rb, cb, r, c);
-                                                if (board[rb][cb].isValidMove(move, board)) {
-                                                    this.move(move);
-                                                    moved = true;
-                                                    break;
+                                                if (board[rb][cb].isValidMove(move, board) && !isDangerous(r, c)) {
+                                                    saveLastMove(move);
+                                                    if (!inCheck(Player.BLACK)) {
+                                                        moved = true;
+                                                        break;
+                                                    }
+                                                    undoLastMove(move);
                                                 }
                                             }
                                             for (int c = 3; c > -1; c--) {
@@ -647,9 +662,12 @@ public class ChessModel implements IChessModel {
                                                     break;
                                                 Move move = new Move(rb, cb, r, c);
                                                 if (board[rb][cb].isValidMove(move, board)) {
-                                                    this.move(move);
-                                                    moved = true;
-                                                    break;
+                                                    saveLastMove(move);
+                                                    if(!inCheck(Player.BLACK)) {
+                                                        moved = true;
+                                                        break;
+                                                    }
+                                                    undoLastMove(move);
                                                 }
                                             }
                                         }
@@ -676,8 +694,12 @@ public class ChessModel implements IChessModel {
                                                     break;
                                                 Move move = new Move(rb, cb, r, c);
                                                 if (board[rb][cb].isValidMove(move, board)) {
-                                                    this.move(move);
-                                                    moved = true;
+                                                    saveLastMove(move);
+                                                    if(!inCheck(Player.BLACK)) {
+                                                        moved = true;
+                                                        break;
+                                                    }
+                                                    undoLastMove(move);
                                                 }
                                             }
                                             for (int c = 3; c > -1; c--) {
@@ -685,9 +707,12 @@ public class ChessModel implements IChessModel {
                                                     break;
                                                 Move move = new Move(rb, cb, r, c);
                                                 if (board[rb][cb].isValidMove(move, board)) {
-                                                    this.move(move);
-                                                    moved = true;
-                                                    break;
+                                                    saveLastMove(move);
+                                                    if(!inCheck(Player.BLACK)) {
+                                                        moved = true;
+                                                        break;
+                                                    }
+                                                    undoLastMove(move);
                                                 }
                                             }
                                         }
@@ -713,8 +738,12 @@ public class ChessModel implements IChessModel {
                                                 break;
                                             Move move = new Move(rb, cb, r, c);
                                             if (board[rb][cb].isValidMove(move, board)) {
-                                                this.move(move);
-                                                moved = true;
+                                                saveLastMove(move);
+                                                if(!inCheck(Player.BLACK)) {
+                                                    moved = true;
+                                                    break;
+                                                }
+                                                undoLastMove(move);
                                             }
                                         }
                                         for (int c = 3; c > -1; c--) {
@@ -722,9 +751,12 @@ public class ChessModel implements IChessModel {
                                                 break;
                                             Move move = new Move(rb, cb, r, c);
                                             if (board[rb][cb].isValidMove(move, board)) {
-                                                this.move(move);
-                                                moved = true;
-                                                break;
+                                                saveLastMove(move);
+                                                if (!inCheck(Player.BLACK)) {
+                                                    moved = true;
+                                                    break;
+                                                }
+                                                undoLastMove(move);
                                             }
                                         }
                                     }
