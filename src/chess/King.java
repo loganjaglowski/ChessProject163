@@ -37,35 +37,40 @@ public class King extends ChessPiece {
             if (Math.abs(move.fromColumn - move.toColumn) == 2 && !moved){
                 //castling to the left
                 if (move.toColumn < move.fromColumn){
-                    if (board[move.toRow][move.toColumn - 2] != null &&
-                            board[move.toRow][move.toColumn - 2].type()
-                                    .equals("Rook")){
-                        Rook rook = (Rook) board[move.toRow]
-                                [move.toColumn - 2];
-                        if (!rook.hasMoved()){
-                            for (int i = 1; i < 4; i++){
-                                if (board[move.fromRow][move.fromColumn - i]
-                                        != null){
-                                    return false;
+                    if (move.toColumn - 2 >= 0 && move.fromColumn >= 0) {
+                        if (board[move.toRow][move.toColumn - 2] != null &&
+                                board[move.toRow][move.toColumn - 2].type()
+                                        .equals("Rook")) {
+                            Rook rook = (Rook) board[move.toRow]
+                                    [move.toColumn - 2];
+                            if (!rook.hasMoved()) {
+                                for (int i = 1; i < 4; i++) {
+                                    if (board[move.fromRow][move.fromColumn - i]
+                                            != null) {
+                                        return false;
+                                    }
                                 }
+                                return true;
                             }
-                            return true;
                         }
                     }
                     //castling to the right
                 } else {
-                    if (board[move.toRow][move.toColumn + 1].type()
-                            .equals("Rook")){
-                        Rook rook = (Rook) board[move.toRow]
-                                [move.toColumn + 1];
-                        if (!rook.hasMoved()){
-                            for (int i = 1; i < 3; i++){
-                                if (board[move.fromRow][move.fromColumn + i]
-                                        != null){
-                                    return false;
+                    if (move.toColumn + 1 <= 7)
+                    if (board[move.toRow][move.toColumn + 1] != null) {
+                        if (board[move.toRow][move.toColumn + 1].type()
+                                .equals("Rook")) {
+                            Rook rook = (Rook) board[move.toRow]
+                                    [move.toColumn + 1];
+                            if (!rook.hasMoved()) {
+                                for (int i = 1; i < 3; i++) {
+                                    if (board[move.fromRow][move.fromColumn + i]
+                                            != null) {
+                                        return false;
+                                    }
                                 }
+                                return true;
                             }
-                            return true;
                         }
                     }
                 }
