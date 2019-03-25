@@ -429,8 +429,6 @@ public class ChessModel implements IChessModel {
                         }
                     }
 
-     
-
                     //find white King
                     int rwk = 0;
                     int cwk = 0;
@@ -722,7 +720,6 @@ public class ChessModel implements IChessModel {
         }
     }
 
-
     //returns boolean value. true if the spot (row, col) can be taken by any white piece
     public boolean isDangerous(int row, int col){
         for (int r = 0; r < numRows(); r++){
@@ -740,11 +737,6 @@ public class ChessModel implements IChessModel {
         }
         return false;
     }
-
-
-
-
-
 }
 
 //end of class

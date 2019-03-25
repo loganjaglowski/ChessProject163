@@ -305,6 +305,18 @@ public class ChessPanel extends JPanel {
                             Move m = new Move(fromRow, fromCol, toRow,
                                     toCol);
 
+                            //when move completes game
+                            if(model.isValidMove(m).isComplete()){
+                                JOptionPane.showMessageDialog(null, "Game complete");
+                            }
+                            //when move is into check fixme: how is move prevented?
+                            if(model.isValidMove(m).isMovedIntoCheck()){
+                                JOptionPane.showMessageDialog(null, "Cannot move into check");
+                            }
+                            //when move puts player into check
+                            if(model.isValidMove(m).isInCheck()){
+                                JOptionPane.showMessageDialog(null, model.currentPlayer() + "is in check");
+                            }
                             //insert ifs and dialog boxes
                             if ((model.isValidMove(m).isMoveSuccessful())) {
                                 state.saveState(model);
@@ -319,6 +331,8 @@ public class ChessPanel extends JPanel {
                                     model.setNextPlayer();
 
                                 }
+                            }else{
+                                JOptionPane.showMessageDialog(null, "Move invalid");
                             }
                         }
                     }
