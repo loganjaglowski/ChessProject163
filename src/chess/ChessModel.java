@@ -12,7 +12,7 @@ public class ChessModel implements IChessModel {
     private Player player;
 
     private boolean firstTurn = true;
-    
+
     private IChessPiece saveFromPiece;
     private int saveFromRow;
     private int saveFromColumn;
@@ -27,6 +27,8 @@ public class ChessModel implements IChessModel {
         //creates the board and sets the first player to white
         board = new IChessPiece[8][8];
         player = Player.WHITE;
+        saveFromPiece = new King(Player.BLACK);
+        saveToPiece = new King(Player.BLACK);
 
         /** Set white pieces */
         board[7][0] = new Rook(Player.WHITE);
@@ -101,7 +103,7 @@ public class ChessModel implements IChessModel {
         }
         return valid;
     }
-    
+
     public void saveLastMove(Move m) {
         saveFromPiece = board[m.fromRow][m.fromColumn];
         saveFromRow = m.fromRow;
@@ -112,14 +114,13 @@ public class ChessModel implements IChessModel {
     }
 
     public void undoLastMove(Move m) {
-        board[m.fromRow][m.fromColumn] = saveFromPiece;
-        m.fromRow = saveFromRow;
-        m.fromColumn = saveFromColumn;
-        board[m.toRow][m.toColumn] = saveToPiece;
-        m.toRow = saveToRow;
-        m.toColumn = saveToColumn;
+        board[m.fromRow][m.fromColumn] = saveToPiece;
+        m.fromRow = saveToRow;
+        m.fromColumn = saveToColumn;
+        board[m.toRow][m.toColumn] = saveFromPiece;
+        m.toRow = saveFromRow;
+        m.toColumn = saveFromColumn;
     }
-
 
     /*****************************************************************
      * A method that decides whether the given move is valid.
@@ -282,7 +283,7 @@ public class ChessModel implements IChessModel {
         }
     }
     
-   /*****************************************************************
+    /*****************************************************************
      * A method that creates an AI for the human player to fight.
      *****************************************************************/
     public void AI() {
@@ -389,7 +390,7 @@ public class ChessModel implements IChessModel {
                                 break;
                             if (board[rb][cb] != null) {
                                 if (board[rb][cb].player() == Player.BLACK) {  //^ searches board for any piece controlled by the ai
-                                    if (this.isDangerous(rb, cb)) {//if the piece (rb, cb) is in danger
+                                    if (this.isDangerous(rb, cb) && board[rb][cb] != null) {//if the piece (rb, cb) is in danger
                                         //find a place on the board which is not dangerous
                                         for (int r = 0; r < 8; r++) {
                                             if (moved)
@@ -397,13 +398,17 @@ public class ChessModel implements IChessModel {
                                             for (int c = 0; c < 8; c++) {
                                                 if (moved)
                                                     break;
-                                                if (board[r][c] == null || board[r][c].player() == Player.WHITE) {
+                                                if ((board[r][c] == null || board[r][c].player() == Player.WHITE) && board[rb][cb] != null) {
                                                     Move m = new Move(rb, cb, r, c);
                                                     if (board[rb][cb].isValidMove(m, board)) {
                                                         if (this.isDangerous(r, c) == false) {
                                                             this.move(m);
-                                                            moved = true;
-                                                            break;
+                                                            saveLastMove(m);
+                                                            if(!inCheck(Player.BLACK)) {
+                                                                moved = true;
+                                                                break;
+                                                            }
+                                                            undoLastMove(m);
                                                         }
                                                     }
                                                 }
@@ -581,9 +586,7 @@ public class ChessModel implements IChessModel {
                                                     moved = true;
                                                     break;
                                                 }
-                                                else {
-                                                    undoLastMove(move);
-                                                }
+                                                undoLastMove(move);
                                             }
                                         }
                                     }
