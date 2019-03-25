@@ -94,13 +94,21 @@ public class ChessModel implements IChessModel {
         }
         return valid;
     }
-    
+
+    /******************************************************************
+     * A method that saves the previous move for the undo
+     * @param m move to be saved
+     *****************************************************************/
     public void saveLastMove(Move m) {
         oldPiece = board[m.toRow][m.toColumn];
         board[m.toRow][m.toColumn] = board[m.fromRow][m.fromColumn];
         board[m.fromRow][m.fromColumn] = null;
     }
 
+    /******************************************************************
+     * A method that undoes the previous move.
+     * @param m the move to be undone
+     *****************************************************************/
     public void undoLastMove(Move m) {
         board[m.fromRow][m.fromColumn] = board[m.toRow][m.toColumn];
         board[m.toRow][m.toColumn] = oldPiece;

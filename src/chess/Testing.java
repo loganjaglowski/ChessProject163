@@ -2,7 +2,7 @@ package chess;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
-
+//todo: create tests for smaller methods first
 public class Testing {
 
     /**testing for correct piece movement */
@@ -326,5 +326,23 @@ public class Testing {
         assertTrue(test.inCheck(Player.BLACK));
     }
 
+    //tests saveLastMove and undoLastMove
+    @Test
+    public void saveUndoMoveTest(){
+        ChessModel t = new ChessModel();
+        //moves a knight
+        Move m = new Move(0, 1, 2, 0);
+       // t.move(m);
+        t.saveLastMove(m);
+        t.undoLastMove(m);
+        assertEquals(t.pieceAt(m.fromRow, m.fromColumn).type(), new Knight(Player.BLACK).type());
+    }
 
+    //tests setPlayer
+    @Test
+    public void setPlayerTEst(){
+        ChessModel t = new ChessModel();
+        t.setPlayer(Player.BLACK);
+        assertTrue(t.currentPlayer().equals(Player.BLACK));
+    }
 }
