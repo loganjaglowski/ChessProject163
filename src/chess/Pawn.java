@@ -44,6 +44,8 @@ public class Pawn extends ChessPiece {
                     valid = false;
                 }
             }
+            if (move.fromColumn - move.toColumn != 0 && board[move.toRow][move.toColumn] == null)
+                valid = false;
             if (super.player() == Player.BLACK) {
                 if (this.isEnPassant(move)) {
 
