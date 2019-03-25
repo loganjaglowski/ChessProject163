@@ -40,8 +40,7 @@ public class Pawn extends ChessPiece {
                         valid = false;
                     }
                 }
-            }else {
-                if (move.fromColumn - move.toColumn != 0) {
+                if (move.fromColumn - move.toColumn == 0) {
                     valid = false;
                 }
             }
