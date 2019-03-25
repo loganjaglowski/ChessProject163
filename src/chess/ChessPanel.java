@@ -318,18 +318,21 @@ public class ChessPanel extends JPanel {
                                 JOptionPane.showMessageDialog(null, model.currentPlayer() + "is in check");
                             }
                             //insert ifs and dialog boxes
-                            if ((model.isValidMove(m).isMoveSuccessful())) {
-                                state.saveState(model);
-                                model.move(m);
-                                model.rookCastling(m);
-                                model.pawnPromoted(m);
-                                displayBoard();
-                                if (AIisActive){
+                             if ((model.isValidMove(m))) {
+                                if (AIisActive) {
+                                    state.saveState(model);
+                                    model.move(m);
+                                    model.rookCastling(m);
+                                    model.pawnPromoted(m);
                                     model.AI();
                                     displayBoard();
                                 }else{
+                                    state.saveState(model);
+                                    model.move(m);
+                                    model.rookCastling(m);
+                                    model.pawnPromoted(m);
                                     model.setNextPlayer();
-
+                                    displayBoard();
                                 }
                             }else{
                                 JOptionPane.showMessageDialog(null, "Move invalid");
