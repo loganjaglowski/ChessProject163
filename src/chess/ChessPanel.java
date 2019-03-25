@@ -304,7 +304,9 @@ public class ChessPanel extends JPanel {
                             firstTurnFlag = true;
                             Move m = new Move(fromRow, fromCol, toRow,
                                     toCol);
-                            if ((model.isValidMove(m))) {
+
+                            //insert ifs and dialog boxes
+                            if ((model.isValidMove(m).isMoveSuccessful())) {
                                 state.saveState(model);
                                 model.move(m);
                                 model.rookCastling(m);

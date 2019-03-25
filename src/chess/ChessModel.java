@@ -2,8 +2,6 @@ package chess;
 
 import javax.swing.JOptionPane;
 
-//ai: look for a white piece, look for a black piece, see if in danger. (attemptToRemoveFromDanger)
-
 public class ChessModel implements IChessModel {
     /** The board */
     private IChessPiece[][] board;
@@ -104,43 +102,46 @@ public class ChessModel implements IChessModel {
         return valid;
     }
 
-    public void saveLastMove(Move m) {
-        saveFromPiece = board[m.fromRow][m.fromColumn];
-        saveFromRow = m.fromRow;
-        saveFromColumn = m.fromColumn;
-        saveToPiece = board[m.toRow][m.toColumn];
-        saveToRow = m.toRow;
-        saveToColumn = m.fromRow;
-    }
-
-    public void undoLastMove(Move m) {
-        board[m.fromRow][m.fromColumn] = saveToPiece;
-        m.fromRow = saveToRow;
-        m.fromColumn = saveToColumn;
-        board[m.toRow][m.toColumn] = saveFromPiece;
-        m.toRow = saveFromRow;
-        m.toColumn = saveFromColumn;
-    }
-
     /*****************************************************************
      * A method that decides whether the given move is valid.
      * @param move a {@link chess.Move} object describing the move to
      * be made.
-     * @return true if valid and false if not.
+     * @return the {@link chess.GameStatus} object with correct values.
      *****************************************************************/
-    public boolean isValidMove(Move move) {
-        boolean valid = false;
+    public GameStatus isValidMove(Move move) {
+        GameStatus status = new GameStatus();
 
-        //ensures user didn't click empty square
-        if (board[move.fromRow][move.fromColumn] != null)
-            if (board[move.fromRow][move.fromColumn].isValidMove(move,
-                    board))
-                //ensures user didn't land on own piece
-                if ((board[move.fromRow][move.fromColumn]).player() !=
-                        currentPlayer().next())
-                    valid = true;
+        //uses polymorphic isValidMove() from super class
+        if (board[move.fromRow][move.fromColumn].isValidMove(move,
+                board)){
 
-        return valid;
+            //temporary pieces to test check conditions, same as parameter
+            IChessPiece toPiece = board[move.toRow][move.toColumn];
+            IChessPiece fromPiece = board[move.fromRow][move.fromColumn];
+
+            //asks if player is in check, changes condition
+            if(inCheck(player)) {
+                status.setInCheck(true);
+            }else if(!inCheck(player)){
+                status.setInCheck(false);
+            }
+            //temporary move to test inCheck conditions
+            Move m = new Move(move.fromRow, move.fromColumn, move.toRow,
+                    move.toColumn);
+            move(m); //method call to do move
+
+            //determines if the new location put the player in check
+            if(inCheck(currentPlayer())) {
+                status.setMovedIntoCheck(true);
+            }else{
+                status.setMoveSuccessful(true);
+            }
+            //unmoves pieces (unsure if this is correct place for this code?)
+            board[move.fromRow][move.fromColumn] = fromPiece;
+            board[move.toRow][move.toColumn] = toPiece;
+        }
+
+        return status;
     }
 
     /******************************************************************
@@ -154,6 +155,10 @@ public class ChessModel implements IChessModel {
         board[move.fromRow][move.fromColumn] = null;
     }
 
+    /******************************************************************
+     * A method that sets the current player.
+     * @param p the player to be set to.
+     *****************************************************************/
     public void setPlayer(Player p){
         player = p;
     }
@@ -170,8 +175,8 @@ public class ChessModel implements IChessModel {
         //finds the position of the king
         for (int x = 0; x < numRows(); x++) {
             for (int y = 0; y < numColumns(); y++) {
-                if (board[x][y] != null && board[x][y].type().equals("King")
-                        && board[x][y].player() == p) {
+                if (board[x][y] != null && board[x][y].type().equals
+                        ("King") && board[x][y].player() == p) {
                     kingX = x;
                     kingY = y;
                     x = numColumns() - 1;
@@ -243,31 +248,39 @@ public class ChessModel implements IChessModel {
         board[row][column] = piece;
     }
 
-     public void pawnPromoted(Move move) {
-        if (board[move.toRow][move.toColumn].type().equals("Pawn") &&
-                (move.toRow == 0 || move.toRow == 7)){
-            String[] promotion = {"Queen", "Knight", "Rook", "Bishop"};
-            int pick = JOptionPane.showOptionDialog(null, "Pick which"
-                            + " piece you would like to promote to: ",
-                    "", JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE, null, promotion,
-                    promotion[0]);
-            if (pick == 0) {
-                board[move.toRow][move.toColumn] = new Queen(player);
-            }
-            if (pick == 1) {
-                board[move.toRow][move.toColumn] = new Knight(player);
-            }
-            if (pick == 2) {
-                board[move.toRow][move.toColumn] = new Rook(player);
-            }
-            if (pick == 3) {
-                board[move.toRow][move.toColumn] = new Bishop(player);
-            }
-
-        }
+    /******************************************************************
+     * A method that promotes pawns that achieve the opposing player's
+     * back row.
+     * @param move the move (hopefully to the back row).
+     *****************************************************************/
+    public void pawnPromoted(Move move) {
+       if (board[move.toRow][move.toColumn].type().equals("Pawn") &&
+               (move.toRow == 0 || move.toRow == 7)){
+           String[] promotion = {"Queen", "Knight", "Rook", "Bishop"};
+           int pick = JOptionPane.showOptionDialog(null, "Pick which"
+                           + " piece you would like to promote to: ",
+                   "", JOptionPane.DEFAULT_OPTION,
+                   JOptionPane.INFORMATION_MESSAGE, null, promotion,
+                   promotion[0]);
+           if (pick == 0) {
+               board[move.toRow][move.toColumn] = new Queen(player);
+           }
+           if (pick == 1) {
+               board[move.toRow][move.toColumn] = new Knight(player);
+           }
+           if (pick == 2) {
+               board[move.toRow][move.toColumn] = new Rook(player);
+           }
+           if (pick == 3) {
+               board[move.toRow][move.toColumn] = new Bishop(player);
+           }
+       }
     }
-    
+
+    /******************************************************************
+     * A method that handles the castling maneuver with rook and king.
+     * @param move the move being made toward castling.
+     *****************************************************************/
     public void rookCastling (Move move){
         if (board[move.toRow][move.toColumn].type().equals("King") &&
                 Math.abs(move.fromColumn - move.toColumn) == 2){
@@ -283,7 +296,7 @@ public class ChessModel implements IChessModel {
         }
     }
     
-    /*****************************************************************
+   /*****************************************************************
      * A method that creates an AI for the human player to fight.
      *****************************************************************/
     public void AI() {
@@ -390,7 +403,7 @@ public class ChessModel implements IChessModel {
                                 break;
                             if (board[rb][cb] != null) {
                                 if (board[rb][cb].player() == Player.BLACK) {  //^ searches board for any piece controlled by the ai
-                                    if (this.isDangerous(rb, cb) && board[rb][cb] != null) {//if the piece (rb, cb) is in danger
+                                    if (this.isDangerous(rb, cb)) {//if the piece (rb, cb) is in danger
                                         //find a place on the board which is not dangerous
                                         for (int r = 0; r < 8; r++) {
                                             if (moved)
@@ -398,17 +411,13 @@ public class ChessModel implements IChessModel {
                                             for (int c = 0; c < 8; c++) {
                                                 if (moved)
                                                     break;
-                                                if ((board[r][c] == null || board[r][c].player() == Player.WHITE) && board[rb][cb] != null) {
+                                                if (board[r][c] == null || board[r][c].player() == Player.WHITE) {
                                                     Move m = new Move(rb, cb, r, c);
                                                     if (board[rb][cb].isValidMove(m, board)) {
                                                         if (this.isDangerous(r, c) == false) {
                                                             this.move(m);
-                                                            saveLastMove(m);
-                                                            if(!inCheck(Player.BLACK)) {
-                                                                moved = true;
-                                                                break;
-                                                            }
-                                                            undoLastMove(m);
+                                                            moved = true;
+                                                            break;
                                                         }
                                                     }
                                                 }
@@ -721,7 +730,7 @@ public class ChessModel implements IChessModel {
                 if (board[r][c] != null){
                     if (board[r][c].player() == Player.WHITE){
                         Move m = new Move(r, c, row, col);
-                        if (this.isValidMove(m)){
+                        if (this.isValidMove(m).isMoveSuccessful()){
                             return true;
                         }
                     }
