@@ -1,5 +1,12 @@
 package chess;
 
+/**********************************************************************
+ * A class that determines the correct ChessPiece values.
+ *
+ * @author Logan Jaglowski, Sarah, and Lauren
+ * @version Winter 2019
+ *********************************************************************/
+
 public abstract class ChessPiece implements IChessPiece {
 
     /** The player */
