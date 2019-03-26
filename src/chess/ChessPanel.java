@@ -336,7 +336,8 @@ public class ChessPanel extends JPanel {
                                     model.move(m);
                                     model.rookCastling(m);
                                     model.pawnPromoted(m);
-                                    if (model.pieceAt(r, c).type().equals("Pawn")){
+                                    if (model.pieceAt(r, c).type().
+                                            equals("Pawn")){
                                         Pawn temp = (Pawn) model.pieceAt(r, c);
                                         if (temp.hasCapturedEnpassant){
                                             model.removeFromBoard(temp.
@@ -360,10 +361,13 @@ public class ChessPanel extends JPanel {
                                     model.rookCastling(m);
                                     model.pawnPromoted(m);
                                     model.setNextPlayer();
-                                    if (model.pieceAt(r, c).type().equals("Pawn")){
+                                    if (model.pieceAt(r, c).type().
+                                            equals("Pawn")){
                                         Pawn temp = (Pawn) model.pieceAt(r, c);
                                         if (temp.hasCapturedEnpassant){
-                                            model.removeFromBoard(temp.capturedRow, temp.capturedCol);
+                                            model.removeFromBoard(temp.
+                                                    capturedRow, temp.
+                                                    capturedCol);
                                         }
                                     }
                                     displayBoard();
@@ -376,6 +380,7 @@ public class ChessPanel extends JPanel {
                     }
                 }
             }
+            //if undo button was clicked
             if(undoBtn == event.getSource()){
                 model = state.loadState();
                 if (!state.checkIfBeginningModel())
