@@ -1,7 +1,7 @@
 package chess;
 
 /**********************************************************************
- * A class that determines the correct Bishop values.
+ * A class that determines the correct Pawn values.
  *
  * @author Logan Jaglowski, Sarah, and Lauren
  * @version Winter 2019
