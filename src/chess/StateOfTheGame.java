@@ -3,12 +3,22 @@ package chess;
 import java.util.ArrayList;
 
 public class StateOfTheGame {
+    /** An arraylist of ChessModel objects */
     private ArrayList<ChessModel> state;
+
+    /** An int representing the current state */
     private int currentState = 0;
+
+    /** An int representing the total states */
     private int totalStates = 0;
+
+    /** The model used at the start */
     private ChessModel beginningModel;
 
-
+    /******************************************************************
+     * A constructor that creates the state of the game.
+     * @param model the model to be saved
+     *****************************************************************/
     public StateOfTheGame (ChessModel model) {
         state = new ArrayList<>();
         beginningModel = new ChessModel();
@@ -23,6 +33,10 @@ public class StateOfTheGame {
         totalStates++;
     }
 
+    /******************************************************************
+     * A method that saves the current state of the game
+     * @param model model to be saved
+     *****************************************************************/
     public void saveState (ChessModel model) {
         if (currentState > 0) {
             for (int delete = 0; delete < currentState; delete++) {
@@ -42,17 +56,29 @@ public class StateOfTheGame {
         totalStates++;
     }
 
+    /******************************************************************
+     * A method that loads a previous state of the game.
+     * @return the previous ChessModel object (state)
+     *****************************************************************/
     public ChessModel loadState () {
         if(currentState >= state.size() - 1)
             return state.get(state.size() - 1);
         return state.get(currentState);
     }
 
+    /******************************************************************
+     * A method that checks if the current model is the first model.
+     * @return true if current model is first model, false if not.
+     *****************************************************************/
     public boolean checkIfBeginningModel() {
         if (currentState - state.size() == 0)
             return true;
         return false;
     }
+
+    /******************************************************************
+     * A method that increments through the arraylist of states.
+     *****************************************************************/
     public void incrementState() {
         currentState++;
     }
