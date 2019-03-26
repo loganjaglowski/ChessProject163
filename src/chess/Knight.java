@@ -1,7 +1,7 @@
 package chess;
 
 /**********************************************************************
- * A class that determines the correct King values.
+ * A class that determines the correct Knight values.
  *
  * @author Logan Jaglowski, Sarah, and Lauren
  * @version Winter 2019
