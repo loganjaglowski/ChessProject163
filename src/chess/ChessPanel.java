@@ -338,6 +338,12 @@ public class ChessPanel extends JPanel {
                                     model.rookCastling(m);
                                     model.pawnPromoted(m);
                                     model.setNextPlayer();
+                                    if (model.pieceAt(r, c).type().equals("Pawn")){
+                                        Pawn temp = (Pawn) model.pieceAt(r, c);
+                                        if (temp.hasCapturedEnpassant == true){
+                                            model.removeFromBoard(temp.capturedRow, temp.capturedCol);
+                                        }
+                                    }
                                     displayBoard();
                                 }
                             }else{
