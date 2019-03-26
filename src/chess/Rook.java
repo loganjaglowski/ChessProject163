@@ -1,5 +1,12 @@
 package chess;
 
+/**********************************************************************
+ * A class that determines the correct Rook values.
+ *
+ * @author Logan Jaglowski, Sarah, and Lauren
+ * @version Winter 2019
+ *********************************************************************/
+
 public class Rook extends ChessPiece {
 
     boolean moved = false;
@@ -41,7 +48,7 @@ public class Rook extends ChessPiece {
                             if (board[move.fromRow][move.fromColumn +1]
                                     != null)
                                 return false;
-                        for (int i = 1; i <= Math.abs(howFarVertical) -
+                        for (int i = 1; i <= Math.abs(howFarVertical)-
                                 1; i++) {
                             if (board[move.fromRow][move.fromColumn +
                                     i] != null) {
