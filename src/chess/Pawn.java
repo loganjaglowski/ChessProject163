@@ -45,8 +45,10 @@ public class Pawn extends ChessPiece {
 
             //first if controls diagonal movement when capturing
             if (board[move.toRow][move.toColumn] != null) {
-                if ((board[move.toRow][move.toColumn]).player() != super.player()) {
-                    if (move.fromColumn - move.toColumn == 1 || move.fromColumn - move.toColumn == -1) {
+                if ((board[move.toRow][move.toColumn]).player() !=
+                        super.player()) {
+                    if (move.fromColumn - move.toColumn == 1 || move
+                            .fromColumn - move.toColumn == -1) {
                         valid = true;
                     }else{
                         valid = false;
@@ -56,11 +58,13 @@ public class Pawn extends ChessPiece {
                     valid = false;
                 }
             }
-            if (move.fromColumn - move.toColumn != 0 && board[move.toRow][move.toColumn] == null)
+            if (move.fromColumn - move.toColumn != 0 && board[move.
+                    toRow][move.toColumn] == null)
                 valid = false;
             if (super.player() == Player.BLACK) {
                 if (this.isEnPassant(move)) {
-                    if (move.fromRow - move.toRow < -2 || move.fromRow - move.toRow > -1) {
+                    if (move.fromRow - move.toRow < -2 || move.fromRow
+                            - move.toRow > -1) {
                         valid = false;
 
                     }else{
@@ -77,7 +81,8 @@ public class Pawn extends ChessPiece {
                 }
             }else{
                 if (this.isEnPassant(move)) {
-                    if (move.fromRow - move.toRow > 2 || move.fromRow - move.toRow < 1) {
+                    if (move.fromRow - move.toRow > 2 || move.fromRow -
+                            move.toRow < 1) {
                         valid = false;
                     }else{
                         if (board[move.toRow][move.toColumn] != null){
@@ -94,9 +99,11 @@ public class Pawn extends ChessPiece {
             }
             if ( move.fromColumn - move.toColumn == -1){
                 if (board[move.fromRow][move.toColumn] != null){
-                    if (board[move.fromRow][move.toColumn].type().equals("Pawn")){
-                        Pawn temp = (Pawn) board[move.fromRow][move.toColumn];
-                        if ( temp.hasDoneEnPassant == true){
+                    if (board[move.fromRow][move.toColumn].type().
+                            equals("Pawn")){
+                        Pawn temp = (Pawn) board[move.fromRow]
+                                [move.toColumn];
+                        if ( temp.hasDoneEnPassant){
                             hasCapturedEnpassant = true;
                             capturedRow = move.fromRow;
                             capturedCol = move.toColumn;
@@ -109,9 +116,11 @@ public class Pawn extends ChessPiece {
 
             if ( move.fromColumn - move.toColumn == 1) {
                 if (board[move.fromRow][move.toColumn] != null){
-                    if (board[move.fromRow][move.toColumn].type().equals("Pawn")){
-                        Pawn temp = (Pawn) board[move.fromRow][move.toColumn];
-                        if ( temp.hasDoneEnPassant == true){
+                    if (board[move.fromRow][move.toColumn].type().
+                            equals("Pawn")){
+                        Pawn temp = (Pawn) board[move.fromRow]
+                                [move.toColumn];
+                        if ( temp.hasDoneEnPassant){
                             hasCapturedEnpassant = true;
                             capturedRow = move.fromRow;
                             capturedCol = move.toColumn;
@@ -129,7 +138,7 @@ public class Pawn extends ChessPiece {
     }
 
     /******************************************************************
-     * A helper method that determines if a pawn does some shit. FUck it. IDk.
+     * A helper method that determines if a pawn moved forward two.
      * @param move the attempted move
      * @return true if en passant and false if not.
      *****************************************************************/
