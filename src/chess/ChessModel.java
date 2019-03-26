@@ -2,7 +2,22 @@ package chess;
 
 import javax.swing.JOptionPane;
 
+/**********************************************************************
+ * A class that determines how the chess game functions, and gives the
+ * blueprints to how the panel will work.
+ *
+ * @author Logan Jaglowski, Sarah, and Lauren
+ * @version Winter 2019
+ *********************************************************************/
+
 public class ChessModel implements IChessModel {
+
+    /** the last move */
+    private Move lastMove = null;
+
+    /** the current move */
+    private Move currentMove = null;
+
     /** The board */
     private IChessPiece[][] board;
 
@@ -59,6 +74,10 @@ public class ChessModel implements IChessModel {
 
     }
 
+    public void removeFromBoard(int row, int col){
+        board[row][col] = null;
+    }
+
     /******************************************************************
      * A method that returns whether the game is complete or not.
      * @return true if complete, false if incomplete.
@@ -70,25 +89,30 @@ public class ChessModel implements IChessModel {
             valid = true;
             for (int x = 0; x < numRows(); x++) {
                 for (int y = 0; y < numColumns(); y++) {
-                    if (board[x][y] != null && board[x][y].player() ==
-                            Player.WHITE) {
+                    if (board[x][y] != null && board[x][y].player()
+                            == Player.WHITE) {
                         for (int r = 0; r < numRows(); r++) {
                             for (int c = 0; c < numColumns(); c++) {
                                 Move m = new Move(x, y, r, c);
-                                if (board[x][y].isValidMove(m, board)) {
-                                    oldPiece = board[m.toRow][m.toColumn];
+                                if (board[x][y].isValidMove(m, board))
+                                {
+                                    oldPiece = board[m.toRow]
+                                            [m.toColumn];
                                     board[m.toRow][m.toColumn] = board
                                             [m.fromRow][m.fromColumn];
-                                    board[m.fromRow][m.fromColumn] = null;
+                                    board[m.fromRow][m.fromColumn] =
+                                            null;
                                     if(!inCheck(Player.WHITE)) {
-                                        board[m.fromRow][m.fromColumn] =
-                                                board[m.toRow][m.toColumn];
-                                        board[m.toRow][m.toColumn] = oldPiece;
+                                        board[m.fromRow][m.fromColumn]
+                                        = board[m.toRow][m.toColumn];
+                                        board[m.toRow][m.toColumn] =
+                                                oldPiece;
                                         return false;
                                     }
                                     board[m.fromRow][m.fromColumn] =
                                             board[m.toRow][m.toColumn];
-                                    board[m.toRow][m.toColumn] = oldPiece;
+                                    board[m.toRow][m.toColumn] =
+                                            oldPiece;
                                 }
                             }
                         }
@@ -113,9 +137,9 @@ public class ChessModel implements IChessModel {
                                     board[m.fromRow][m.fromColumn] =
                                             null;
                                     if(!inCheck(Player.BLACK)) {
-                                        board[m.fromRow][m.fromColumn]=
-                                                board[m.toRow][m.
-                                                        toColumn];
+                                        board[m.fromRow][m.fromColumn]
+                                                = board[m.toRow]
+                                                [m.toColumn];
                                         board[m.toRow][m.toColumn] =
                                                 oldPiece;
                                         return false;
@@ -134,20 +158,12 @@ public class ChessModel implements IChessModel {
         return valid;
     }
 
-    /******************************************************************
-     * A method that saves the previous move for the undo
-     * @param m move to be saved
-     *****************************************************************/
     public void saveLastMove(Move m) {
         oldPiece = board[m.toRow][m.toColumn];
         board[m.toRow][m.toColumn] = board[m.fromRow][m.fromColumn];
         board[m.fromRow][m.fromColumn] = null;
     }
 
-    /******************************************************************
-     * A method that undoes the previous move.
-     * @param m the move to be undone
-     *****************************************************************/
     public void undoLastMove(Move m) {
         board[m.fromRow][m.fromColumn] = board[m.toRow][m.toColumn];
         board[m.toRow][m.toColumn] = oldPiece;
@@ -163,39 +179,50 @@ public class ChessModel implements IChessModel {
         GameStatus status = new GameStatus();
 
         //uses polymorphic isValidMove() from super class
-        if (board[move.fromRow][move.fromColumn] != null && move!=null)
-        if (board[move.fromRow][move.fromColumn].player() ==
-                currentPlayer())
-        if (board[move.fromRow][move.fromColumn].isValidMove(move,
-                board)){
+        if (board[move.fromRow][move.fromColumn] != null && move
+                != null)
+            if (board[move.fromRow][move.fromColumn].player() ==
+                    currentPlayer())
+                if (board[move.fromRow][move.fromColumn].isValidMove
+                        (move, board) || isEnPassant(currentMove,
+                        lastMove)){
+                    if (isEnPassant(currentMove, lastMove)) {
+                        status.setMoveSuccessful(true);
+                    }
+                    //temporary pieces to test check conditions, same
+                    // as parameter
+                    IChessPiece toPiece = board[move.toRow]
+                            [move.toColumn];
 
-            //temporary pieces to test check conditions, same as param
-            IChessPiece toPiece = board[move.toRow][move.toColumn];
+                    //asks if player is in check, changes condition
+                    if(inCheck(player)) {
+                        status.setInCheck(true);
+                    }else if(!inCheck(player)){
+                        status.setInCheck(false);
+                    }
+                    //temporary move to test inCheck conditions
+                    Move m = new Move(move.fromRow, move.fromColumn,
+                            move.toRow,
+                            move.toColumn);
+                    toPiece = board[m.toRow][m.toColumn];
+                    board[m.toRow][m.toColumn] = board[m.fromRow]
+                            [m.fromColumn];
+                    board[m.fromRow][m.fromColumn] = null;
+                    //method call to do move
 
-            //asks if player is in check, changes condition
-            if(inCheck(player)) {
-                status.setInCheck(true);
-            }else if(!inCheck(player)){
-                status.setInCheck(false);
-            }
-            //temporary move to test inCheck conditions
-            Move m = new Move(move.fromRow, move.fromColumn, move.toRow,
-                    move.toColumn);
-            toPiece = board[m.toRow][m.toColumn];
-            board[m.toRow][m.toColumn] = board[m.fromRow][m.fromColumn];
-            board[m.fromRow][m.fromColumn] = null; //method call to do
-            // move
+                    //determines if the new location put the player
+                    // in check
+                    if(inCheck(currentPlayer())) {
+                        status.setMovedIntoCheck(true);
+                    }else{
+                        status.setMoveSuccessful(true);
+                    }
 
-            //determines if the new location put the player in check
-            if(inCheck(currentPlayer())) {
-                status.setMovedIntoCheck(true);
-            }else{
-                status.setMoveSuccessful(true);
-            }
+                    board[m.fromRow][m.fromColumn] = board[m.toRow]
+                            [m.toColumn];
+                    board[m.toRow][m.toColumn] = toPiece;
 
-            board[m.fromRow][m.fromColumn] = board[m.toRow][m.toColumn];
-            board[m.toRow][m.toColumn] = toPiece;
-        }
+                }
 
         return status;
     }
@@ -219,7 +246,7 @@ public class ChessModel implements IChessModel {
     public void setPlayer(Player p){
         player = p;
     }
-    
+
     /*****************************************************************
      * A method that determines whether either king is in check.
      * @param  p {@link chess.Move} the Player being checked
@@ -311,49 +338,57 @@ public class ChessModel implements IChessModel {
      * @param move the move (hopefully to the back row).
      *****************************************************************/
     public void pawnPromoted(Move move) {
-       if (board[move.toRow][move.toColumn].type().equals("Pawn") &&
-               (move.toRow == 0 || move.toRow == 7)){
-           String[] promotion = {"Queen", "Knight", "Rook", "Bishop"};
-           int pick = JOptionPane.showOptionDialog(null, "Pick which"
-                           + " piece you would like to promote to: ",
-                   "", JOptionPane.DEFAULT_OPTION,
-                   JOptionPane.INFORMATION_MESSAGE, null, promotion,
-                   promotion[0]);
-           if (pick == 0) {
-               board[move.toRow][move.toColumn] = new Queen(player);
-           }
-           if (pick == 1) {
-               board[move.toRow][move.toColumn] = new Knight(player);
-           }
-           if (pick == 2) {
-               board[move.toRow][move.toColumn] = new Rook(player);
-           }
-           if (pick == 3) {
-               board[move.toRow][move.toColumn] = new Bishop(player);
-           }
-       }
+        if(board[move.toRow][move.toColumn] != null) {
+            if (board[move.toRow][move.toColumn].type().equals("Pawn")
+                    &&
+                    (move.toRow == 0 || move.toRow == 7)) {
+                String[] promotion = {"Queen", "Knight",
+                        "Rook", "Bishop"};
+                int pick = JOptionPane.showOptionDialog(null,
+                        "Pick which"
+                        + " piece you would like to promote to: ",
+                        "", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE, null, promotion,
+                        promotion[0]);
+                if (pick == 0) {
+                board[move.toRow][move.toColumn] = new Queen(player);
+                }
+                if (pick == 1) {
+                board[move.toRow][move.toColumn] = new Knight(player);
+                }
+                if (pick == 2) {
+                board[move.toRow][move.toColumn] = new Rook(player);
+                }
+                if (pick == 3) {
+                board[move.toRow][move.toColumn] = new Bishop(player);
+                }
+            }
+        }
     }
 
     /******************************************************************
      * A method that handles the castling maneuver with rook and king.
      * @param move the move being made toward castling.
      *****************************************************************/
-    public void rookCastling (Move move){
-        if (board[move.toRow][move.toColumn].type().equals("King") &&
-                Math.abs(move.fromColumn - move.toColumn) == 2){
-            if (move.toColumn < move.fromColumn){
-                board[move.fromRow][move.fromColumn - 1] =
-                        board[move.fromRow][move.fromColumn - 4];
-                board[move.fromRow][move.fromColumn - 4] = null;
-            } else {
-                board[move.fromRow][move.fromColumn + 1] =
-                        board[move.fromRow][move.fromColumn + 3];
-                board[move.fromRow][move.fromColumn + 3] = null;
+    public void rookCastling (Move move) {
+        if (board[move.toRow][move.toColumn] != null) {
+            if (board[move.toRow][move.toColumn].type().equals("King")
+                    &&
+                    Math.abs(move.fromColumn - move.toColumn) == 2) {
+                if (move.toColumn < move.fromColumn) {
+                    board[move.fromRow][move.fromColumn - 1] =
+                            board[move.fromRow][move.fromColumn - 4];
+                    board[move.fromRow][move.fromColumn - 4] = null;
+                } else {
+                    board[move.fromRow][move.fromColumn + 1] =
+                            board[move.fromRow][move.fromColumn + 3];
+                    board[move.fromRow][move.fromColumn + 3] = null;
+                }
             }
         }
     }
-    
-   /*****************************************************************
+
+    /*****************************************************************
      * A method that creates an AI for the human player to fight.
      *****************************************************************/
     public void AI() {
@@ -365,118 +400,134 @@ public class ChessModel implements IChessModel {
         moved:
         while (moved == false) {
 
-        if (firstTurn == true) {
-            this.move(new Move(1, 1, 3, 1));
-            firstTurn = false;
-            break moved;
-        } else {
-            if (isComplete()) {
-                moved = true;
-                break;
-            }
-            //get out of check
-            if (this.inCheck(Player.BLACK)) {
-                //find  Black King
-                int rk = 0;
-                int ck = 0;
-                boolean kingFound = false;
-                for (int row = 0; row < 8; row++) {
-                    if (kingFound)
-                        break;
-                    for (int column = 0; column < 8; column++) {
+            if (firstTurn == true) {
+                this.move(new Move(1, 1, 3, 1));
+                firstTurn = false;
+                break moved;
+            } else {
+                if (isComplete()) {
+                    moved = true;
+                    break;
+                }
+                //get out of check
+                if (this.inCheck(Player.BLACK)) {
+                    //find  Black King
+                    int rk = 0;
+                    int ck = 0;
+                    boolean kingFound = false;
+                    for (int row = 0; row < 8; row++) {
                         if (kingFound)
                             break;
-                        if (board[row][column] != null) {
-                            if (board[row][column].player() == Player.
-                                    BLACK) {
-                                if (board[row][column].type().equals
-                                        ("King")) {
-                                    rk = row;
-                                    ck = column;
-                                    kingFound = true;
-                                    break; //this only breaks out of
-                                    // the second loop but that's okay,
-                                    // the first only increments it
-                                }
-                            }
-                        }
-                    }
-                }
-                //move king out of danger
-                if (this.isDangerous(rk, ck)) {//if the piece (rb, cb)
-                    // is in danger
-                    for (int r = 0; r < 8; r++) {
-                        if (moved)
-                            break;
-                        for (int c = 0; c < 8; c++) {
-                            if (moved)
+                        for (int column = 0; column < 8; column++) {
+                            if (kingFound)
                                 break;
-                            if (board[r][c] == null || board[r][c].
-                                    player() == Player.WHITE) {
-                                Move m = new Move(rk, ck, r, c);
-                                if (board[rk][ck].isValidMove(m,
-                                        board)) {
-                                    if (this.isDangerous(r, c) ==
-                                            false) {  //^ searches
-                                        // board and checks for tile
-                                        // which is not dangerous
-                                        saveLastMove(m);
-                                        if (!inCheck(Player.BLACK)) {
-                                            moved = true;
-                                            break;
-                                        }
-                                        undoLastMove(m);
+                            if (board[row][column] != null) {
+                                if (board[row][column].player() ==
+                                        Player.BLACK) {
+                                    if (board[row][column].type().
+                                            equals("King")) {
+                                        rk = row;
+                                        ck = column;
+                                        kingFound = true;
+                                        break;
                                     }
                                 }
                             }
                         }
                     }
-                }
-                //if there the king cannot move out of danger, move
-                // another piece
-                if (board[rk][ck] != null) {
-                    for (int rb = 0; rb < 8; rb++) {
-                        if (moved)
-                            break;
-                        for (int cb = 0; cb < 8; cb++) {
+                    //move king out of danger
+                    if (this.isDangerous(rk, ck)) {//if the piece (rb,
+                        // cb) is in danger
+                        for (int r = 0; r < 8; r++) {
                             if (moved)
                                 break;
-                            if (board[rb][cb] != null) {
-                                if (board[rb][cb].player() ==
-                                   Player.BLACK) {
-                                    //finds any black piece that isn't
-                                    //a king
-                                    if (!board[rb][cb].type().equals
-                                            ("King")) {
-                                        for (int r = 0; r < 8; r++) {
-                                            if (moved)
+                            for (int c = 0; c < 8; c++) {
+                                if (moved)
+                                    break;
+                                if (board[r][c] == null || board[r][c].
+                                        player() == Player.WHITE) {
+                                    Move m = new Move(rk, ck, r, c);
+                                    if (board[rk][ck].isValidMove
+                                            (m, board)) {
+                                        if (this.isDangerous(r, c) ==
+                                                false) {  //^ searches
+                                            // board and checks for
+                                            // tile which is not
+                                            // dangerous
+                                            saveLastMove(m);
+                                            if (!inCheck(Player.BLACK)
+                                            ) {
+                                                moved = true;
                                                 break;
-                                            for (int c = 0; c <8;c++) {
+                                            }
+                                            undoLastMove(m);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    //if there the king cannot move out of danger, move
+                    // another piece
+                    if (board[rk][ck] != null) {
+                        for (int rb = 0; rb < 8; rb++) {
+                            if (moved)
+                                break;
+                            for (int cb = 0; cb < 8; cb++) {
+                                if (moved)
+                                    break;
+                                if (board[rb][cb] != null) {
+                                    if (board[rb][cb].player() ==
+                                            Player.BLACK) {
+                                        if (!board[rb][cb].type().
+                                                equals("King")) {
+                                            //finds any black piece
+                                            // that isn't a king
+                                            for (int r = 0; r < 8; r++)
+                                            {
                                                 if (moved)
                                                     break;
-                                                Move move = new Move(rb
-                                                        , cb, r, c);
-                                                if (board[rb][cb].
-                                                        isValidMove
-                                                            (move,
-                                                               board)){
-                                                    saveLastMove(move);
-                                                    //checks to see if
-                                                    // king is still in
-                                                    // danger, moves
-                                                    // piece back if so
-                                                    if (!inCheck(Player
-                                                            .BLACK)) {
-                                                        moved = true;
+                                                for (int c = 0; c < 8;
+                                                     c++) {
+                                                    if (moved)
                                                         break;
-                                                    } else {// breaks
-                                                        // out of loops
-                                                        // if king has
-                                                        // been saved,
-                                                        // move isn't
-                                                        // changed
+                                                    Move m = new
+                                                            Move(rb,
+                                                            cb, r, c);
+                                                    if(board[rb][cb].
+                                                        isValidMove
+                                                                (m,
+                                                                board
+                                                                )){
+                                                        saveLastMove
+                                                                (m);
+                                                        if (!inCheck
+                                                            (Player.
+                                                                BLACK)
+                                                        ) { //checks to
+                                                            // see if
+                                                            // king is
+                                                            // still in
+                                                            // danger,
+                                                            // moves
+                                                            // piece
+                                                            // back if
+                                                            // it is
+                                                            moved =
+                                                                true;
+                                                            break;
+                                                        }else{// breaks
+                                                            // out of
+                                                            // loops if
+                                                            // king has
+                                                            // been
+                                                            // saved,
+                                                            // move
+                                                            // isn't
+                                                            // changed
                                                         undoLastMove
-                                                          (move);
+                                                                (m);
+                                                        }
                                                     }
                                                 }
                                             }
@@ -486,8 +537,7 @@ public class ChessModel implements IChessModel {
                             }
                         }
                     }
-                }
-            } else {
+                } else {
                     //attempts to remove piece from danger
                     for (int rb = 0; rb < 8; rb++) {
                         if (moved)
@@ -496,46 +546,51 @@ public class ChessModel implements IChessModel {
                             if (moved)
                                 break;
                             if (board[rb][cb] != null) {
-                                if (board[rb][cb].player() == Player.
-                                        BLACK) {  //^ searches board
-                                    // for any piece controlled by ai
-                                    //if the piece (rb, cb) is in
-                                    //danger
+                                if (board[rb][cb].player() ==
+                                        Player.BLACK) {  //^ searches
+                                    // board for any piece controlled
+                                    // by the ai
                                     if (this.isDangerous(rb, cb) &&
-                                            board[rb][cb] != null) {
+                                            board[rb][cb] != null)
+                                    {//if the piece (rb, cb) is in
+                                        // danger
                                         //find a place on the board
                                         // which is not dangerous
                                         for (int r = 0; r < 8; r++) {
                                             if (moved)
                                                 break;
-                                            for (int c = 0; c < 8;c++){
+                                            for (int c = 0; c < 8; c++)
+                                            {
                                                 if (moved)
                                                     break;
-                                                if ((board[r][c] ==null
-                                                        || board[r][c]
-                                                        .player() ==
-                                                        Player.WHITE)
-                                                        && board[rb]
-                                                        [cb] != null) {
+                                                if ((board[r][c] ==
+                                                        null || board
+                                                        [r][c].player()
+                                                        == Player.
+                                                        WHITE) &&
+                                                        board[rb][cb]
+                                                            != null) {
                                                     Move m = new Move
-                                                            (rb, cb, r,
-                                                                    c);
+                                                        (rb, cb, r, c);
                                                     if (board[rb][cb].
-                                                            isValidMove
-                                                            (m,board)){
-                                                       if (!this.
-                                                       isDangerous(rb,
-                                                               cb)) {
-                                                       saveLastMove(m);
+                                                    isValidMove(m,
+                                                            board)){
+                                                        if (this.
+                                                        isDangerous
+                                                            (rb, cb)
+                                                        == false) {
+                                                        saveLastMove
+                                                                (m);
                                                             if(!inCheck
-                                                              (Player.
-                                                              BLACK)) {
+                                                            (Player.
+                                                            BLACK)){
                                                                 moved =
-                                                                 true;
-                                                                break;
-                                                       }
-                                                       undoLastMove(m);
-                                                       }
+                                                                true;
+                                                            break;
+                                                            }
+                                                    undoLastMove(m)
+                                                            ;
+                                                        }
                                                     }
                                                 }
                                             }
@@ -545,6 +600,9 @@ public class ChessModel implements IChessModel {
                             }
                         }
                     }
+
+
+
                     //find white King
                     int rwk = 0;
                     int cwk = 0;
@@ -557,8 +615,8 @@ public class ChessModel implements IChessModel {
                              colWhiteKing++) {
                             if (whiteKingFound)
                                 break;
-                            if (board[rowWhiteKing][colWhiteKing]
-                                    != null) {
+                            if (board[rowWhiteKing][colWhiteKing] !=
+                                    null) {
                                 if (board[rowWhiteKing][colWhiteKing].
                                         player() == Player.BLACK) {
                                     if (board[rowWhiteKing]
@@ -567,10 +625,7 @@ public class ChessModel implements IChessModel {
                                         rwk = rowWhiteKing;
                                         cwk = colWhiteKing;
                                         whiteKingFound = true;
-                                        break; //this only breaks out
-                                        // of the second loop but
-                                        // that's okay, the first
-                                        // only increments it
+                                        break;
                                     }
                                 }
                             }
@@ -585,12 +640,13 @@ public class ChessModel implements IChessModel {
                             if (moved)
                                 break;
                             if (board[rb][cb] != null) {
-                                if (board[rb][cb].player() == Player.
-                                        BLACK) {  //^ searches board
-                                    // for any piece controlled by
-                                    // the ai attempt to capture
-                                    // white king (needs info from
-                                    // before the .incheck if)
+                                if (board[rb][cb].player() ==
+                                        Player.BLACK) {  //^ searches
+                                    // board for any piece controlled
+                                    // by the ai
+                                    //attempt to capture white king
+                                    // (needs info from before the
+                                    // .incheck if)
                                     Move move = new Move(rb, cb, rwk,
                                             cwk);
                                     if (board[rb][cb].isValidMove(move,
@@ -619,7 +675,53 @@ public class ChessModel implements IChessModel {
                                         BLACK) {
                                     if (board[rb][cb].type().equals
                                             ("Pawn")) {
-                                        for (int rw = 0; rw < 8;rw++){
+                                        for (int rw = 0; rw < 8; rw++){
+                                            if (moved)
+                                                break;
+                                            for (int cw = 0; cw < 8;
+                                                 cw++) {
+                                                if (moved)
+                                                    break;
+                                                if (board[rw][cw] !=
+                                                        null) {
+                                                    if (board[rw][cw].
+                                                        player() ==
+                                                    Player.WHITE) {
+                                                    Move move = new
+                                                        Move(rb, cb,
+                                                            rw, cw);
+                                                        if (board[rb]
+                                                            [cb].
+                                                        isValidMove
+                                                    (move, board)){
+                                                            if (this.
+                                                            isDangerous
+                                                            (rw, cw) ==
+                                                            false) {
+                                                        saveLastMove
+                                                                (move);
+                                                                if
+                                                            (!inCheck(
+                                                        Player.BLACK)){
+                                                            moved =
+                                                                true;
+                                                                break;
+                                                                }
+                                                        undoLastMove
+                                                            (move);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    } else if (board[rb][cb].type().
+                                        equals("Knight") || board[rb]
+                                        [cb].type().equals("Rook") ||
+                                        board[rb][cb].type().equals
+                                                    ("Bishop")) {
+                                    for (int rw = 0; rw < 8; rw++){
                                             if (moved)
                                                 break;
                                             for (int cw = 0; cw < 8;
@@ -630,72 +732,30 @@ public class ChessModel implements IChessModel {
                                                         null) {
                                                     if (board[rw][cw].
                                                             player() ==
-                                                            Player.
-                                                             WHITE) {
-                                                     Move move = new
-                                                     Move(rb, cb,
-                                                     rw, cw);
-                                                       if(board[rb]
-                                                       [cb].
-                                                       isValidMove
-                                                       (move,
-                                                       board)){
-                                                        if(!this.
-                                                        isDangerous
-                                                        (cw, rw)) {
-                                                         saveLastMove
-                                                         (move);
-                                                           if(!inCheck
-                                                           (Player.
-                                                             BLACK)){
-                                                             moved =
-                                                             true;
-                                                             break;
-                                                           }
-                                                           undoLastMove
-                                                           (move);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                    } else if (board[rb][cb].type().
-                                        equals("Knight") ||
-                                        board[rb][cb].type().
-                                        equals("Rook") || board[rb][cb]
-                                            .type().equals("Bishop")) {
-                                        for (int rw = 0; rw < 8; rw++){
-                                            if (moved)
-                                                break;
-                                            for (int cw =0;cw<8;cw++){
-                                               if (moved)
-                                                    break;
-                                               if(board[rw][cw]!=null){
-                                                   if (board[rw][cw].
-                                                   player() ==
-                                                   Player.WHITE) {
-                                                     Move move=new Move
-                                                        (rb,cb,rw,cw);
-                                                        if (board
-                                                        [rb][cb].
+                                                        Player.WHITE) {
+                                                        Move move = new
+                                                        Move(rb, cb,
+                                                            rw, cw);
+                                                        if (board[rb]
+                                                                [cb].
                                                         isValidMove
-                                                        (move, board)){
-                                                          if(this.
-                                                          isDangerous
-                                                          (rw, cw) ==
-                                                          false){
-                                                          saveLastMove
-                                                           (move);
-                                                            if(!inCheck
+                                                    (move, board)){
+                                                            if (this.
+                                                        isDangerous
+                                                        (rw, cw) ==
+                                                            false) {
+                                                        saveLastMove
+                                                            (move);
+                                                                if (
+                                                            !inCheck
                                                             (Player.
-                                                            BLACK)){
-                                                            moved=true;
-                                                            break;
-                                                                }
-                                                           undoLastMove
-                                                             (move);
+                                                            BLACK)) {
+                                                                moved =
+                                                                true;
+                                                                break;
+                                                            }
+                                                        undoLastMove
+                                                                (move);
                                                             }
                                                         }
                                                     }
@@ -708,35 +768,39 @@ public class ChessModel implements IChessModel {
                                         for (int rw = 0; rw < 8; rw++){
                                             if (moved)
                                                 break;
-                                            for (int cw=0; cw<8; cw++){
+                                            for (int cw = 0; cw < 8;
+                                                 cw++) {
                                                 if (moved)
                                                     break;
-                                                if (board[rw][cw]
-                                                        != null) {
+                                                if (board[rw][cw] !=
+                                                        null) {
                                                     if (board[rw][cw].
-                                                        player()==
-                                                        Player.WHITE){
+                                                            player() ==
+                                                            Player.
+                                                            WHITE) {
                                                         Move move = new
                                                         Move(rb, cb,
-                                                               rw, cw);
+                                                            rw, cw);
                                                         if (board[rb]
-                                                         [cb].
-                                                         isValidMove
-                                                         (move,board)){
-                                                          if(!this.
-                                                           isDangerous
-                                                           (rw,cw)){
-                                                           saveLastMove
-                                                           (move);
-                                                            if(!inCheck
-                                                              (Player.
-                                                              BLACK)){
-                                                              moved=
-                                                               true;
+                                                            [cb].
+                                                            isValidMove
+                                                        (move, board)){
+                                                            if(this
+                                                        .isDangerous
+                                                            (rw, cw)
+                                                            == false) {
+                                                        saveLastMove
+                                                                (move);
+                                                            if
+                                                            (!inCheck
+                                                            (Player.
+                                                            BLACK)) {
+                                                                moved =
+                                                                true;
                                                                 break;
                                                                 }
-                                                           undoLastMove
-                                                                (move);
+                                                        undoLastMove
+                                                            (move);
                                                             }
                                                         }
                                                     }
@@ -758,30 +822,32 @@ public class ChessModel implements IChessModel {
                                                     if (board[rw][cw].
                                                             player() ==
                                                             Player.
-                                                               WHITE) {
+                                                            WHITE) {
                                                         Move move = new
-                                                           Move(rb, cb,
-                                                               rw, cw);
+                                                        Move(rb, cb,
+                                                            rw, cw);
                                                         if (board[rb]
-                                                            [cb].
-                                                            isValidMove
-                                                              (move,
-                                                               board)){
-                                                          if (!this.
-                                                          isDangerous
-                                                          (rw, cw)) {
-                                                          saveLastMove
-                                                          (move);
-                                                          if(!inCheck
+                                                                [cb].
+                                                        isValidMove
+                                                        (move, board)){
+                                                            if
+                                                            (this.
+                                                        isDangerous
+                                                        (rw, cw) ==
+                                                            false) {
+                                                        saveLastMove
+                                                                (move);
+                                                                if(
+                                                            !inCheck
                                                             (Player.
                                                             BLACK)) {
-                                                              moved =
-                                                              true;
-                                                              break;
-                                                          }
-                                                          undoLastMove
-                                                          (move);
-                                                          }
+                                                                moved =
+                                                                true;
+                                                                break;
+                                                            }
+                                                            undoLastMove
+                                                            (move);
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -801,21 +867,21 @@ public class ChessModel implements IChessModel {
                             if (moved)
                                 break;
                             if (board[rb][cb] != null) {
-                                if (board[rb][cb].player() == Player
-                                        .BLACK) {
-                                    if (board[rb][cb] instanceof Pawn){
+                                if (board[rb][cb].player() ==
+                                        Player.BLACK) {
+                                    if (board[rb][cb] instanceof Pawn)
+                                    {
                                         if (rb != 7) {
-                                            Move move = new Move(rb,cb,
-                                                    rb + 1, cb);
+                                            Move move = new Move(rb,
+                                                    cb, rb + 1,
+                                                    cb);
                                             if (board[rb][cb].
-                                                isValidMove(move,
-                                                        board)) {
+                                                    isValidMove
+                                                    (move, board)) {
                                                 saveLastMove(move);
                                                 if (!inCheck(Player.
-                                                        BLACK) &&
-                                                        !isDangerous
-                                                            (rb +
-                                                             1, cb)) {
+                                                BLACK) && !isDangerous
+                                                (rb + 1, cb)) {
                                                     moved = true;
                                                     break;
                                                 }
@@ -839,43 +905,48 @@ public class ChessModel implements IChessModel {
                                 if (board[rb][cb].player() == Player.
                                         BLACK) {
                                     if (board[rb][cb].type().equals
-                                       ("Knight") || board[rb][cb].
-                                       type().equals("Rook") ||
-                                       board[rb][cb].type().
-                                       equals("Bishop")) {
+                                            ("Knight") || board[rb]
+                                            [cb].type().equals("Rook")
+                                            || board[rb][cb].type().
+                                            equals("Bishop")) {
                                         for (int r = 7; r > -1; r--) {
                                             if (moved)
                                                 break;
-                                            for(int c = 4; c < 8; c++){
+                                            for (int c = 4; c < 8; c++)
+                                            {
                                                 if (moved)
                                                     break;
-                                                Move move =
-                                                new Move(rb, cb, r, c);
+                                                Move move = new Move(
+                                                        rb, cb, r, c);
                                                 if (board[rb][cb].
-                                                   isValidMove(move,
-                                                   board) &&
-                                                   !isDangerous(r, c)){
+                                                        isValidMove(
+                                                    move, board)
+                                                        &&
+                                                        !isDangerous
+                                                            (r, c)) {
                                                     saveLastMove(move);
-                                                    if (!inCheck(Player
-                                                            .BLACK)) {
+                                                    if (!inCheck
+                                                        (Player.BLACK))
+                                                    {
                                                         moved = true;
                                                         break;
                                                     }
                                                     undoLastMove(move);
                                                 }
                                             }
-                                            for(int c=3; c > -1; c--) {
+                                            for (int c = 3; c > -1;c--)
+                                            {
                                                 if (moved)
                                                     break;
                                                 Move move = new Move
                                                         (rb, cb, r, c);
                                                 if (board[rb][cb].
-                                                   isValidMove(move,
-                                                   board)) {
-                                                   saveLastMove(move);
-                                                    if(!inCheck(Player
-                                                      .BLACK)) {
-                                                      moved = true;
+                                                        isValidMove
+                                                        (move, board)){
+                                                    saveLastMove(move);
+                                                    if(!inCheck(Player.
+                                                            BLACK)) {
+                                                        moved = true;
                                                         break;
                                                     }
                                                     undoLastMove(move);
@@ -902,31 +973,33 @@ public class ChessModel implements IChessModel {
                                         for (int r = 7; r > -1; r--) {
                                             if (moved)
                                                 break;
-                                            for (int c = 4; c<8; c++){
+                                            for (int c = 4; c < 8; c++)
+                                            {
                                                 if (moved)
                                                     break;
                                                 Move move = new Move
-                                                    (rb, cb, r, c);
+                                                        (rb, cb, r, c);
                                                 if (board[rb][cb].
-                                                   isValidMove(move,
-                                                   board)) {
+                                                        isValidMove
+                                                        (move, board)){
                                                     saveLastMove(move);
                                                     if(!inCheck(Player.
-                                                       BLACK)) {
+                                                            BLACK)) {
                                                         moved = true;
                                                         break;
                                                     }
                                                     undoLastMove(move);
                                                 }
                                             }
-                                            for (int c = 3; c>-1; c--){
+                                            for (int c = 3; c > -1;
+                                                 c--) {
                                                 if (moved)
                                                     break;
                                                 Move move = new Move
-                                                     (rb, cb, r, c);
+                                                        (rb, cb, r, c);
                                                 if (board[rb][cb].
-                                                   isValidMove(move,
-                                                   board)){
+                                                    isValidMove(move,
+                                                        board)) {
                                                     saveLastMove(move);
                                                     if(!inCheck(Player.
                                                             BLACK)) {
@@ -958,10 +1031,11 @@ public class ChessModel implements IChessModel {
                                         for (int c = 4; c < 8; c++) {
                                             if (moved)
                                                 break;
-                                            Move move = new Move
-                                                 (rb, cb, r, c);
+                                            Move move = new Move(rb,
+                                                    cb, r, c);
                                             if (board[rb][cb].
-                                              isValidMove(move,board)){
+                                                    isValidMove(move,
+                                                            board)) {
                                                 saveLastMove(move);
                                                 if(!inCheck(Player.
                                                         BLACK)) {
@@ -974,10 +1048,11 @@ public class ChessModel implements IChessModel {
                                         for (int c = 3; c > -1; c--) {
                                             if (moved)
                                                 break;
-                                            Move move = new Move
-                                                 (rb, cb, r, c);
+                                            Move move = new Move(rb,
+                                                    cb, r, c);
                                             if (board[rb][cb].
-                                              isValidMove(move,board)){
+                                                    isValidMove(move,
+                                                            board)) {
                                                 saveLastMove(move);
                                                 if (!inCheck(Player.
                                                         BLACK)) {
@@ -998,7 +1073,7 @@ public class ChessModel implements IChessModel {
     }
 
     //returns boolean value. true if the spot (row, col) can be taken
-    //by any white piece
+    // by any white piece
     public boolean isDangerous(int row, int col){
         for (int r = 0; r < numRows(); r++){
             for (int c = 0; c < numColumns(); c++){
@@ -1017,12 +1092,106 @@ public class ChessModel implements IChessModel {
     }
 
     /******************************************************************
-     * A method that removes a piece from the board.
-     * @param row row to be removed from
-     * @param col column to be removed from
+     * A method that sets the player's last move
+     * @param lastMove the Last move the player did
      *****************************************************************/
-    public void removeFromBoard(int row, int col){
-        board[row][col] = null;
+    public void setLastMove(Move lastMove) {
+        this.lastMove = lastMove;
+    }
+
+    /******************************************************************
+     * A method that sets the player's current move
+     * @param currentMove the current move the player's trying
+     *****************************************************************/
+    public void setCurrentMove(Move currentMove) {
+        this.currentMove = currentMove;
+    }
+
+    /******************************************************************
+     * A method that sets the square to the specified piece.
+     * @param recent the recent move
+     * @param last the last move
+     * @returns true or false depending on whether or not it is an
+     * EnPassant
+     *****************************************************************/
+    public boolean isEnPassant(Move recent, Move last) {
+        boolean valid = false;
+        if (last != null && recent != null) {
+            if (board[last.toRow][last.toColumn] != null) {
+                if (board[recent.fromRow][recent.fromColumn] != null) {
+                    if (board[recent.fromRow][recent.fromColumn].type()
+                            .equals("Pawn")) {
+                        if (board[last.toRow][last.toColumn].type().
+                                equals("Pawn")) {
+                            if (board[last.toRow][last.toColumn].
+                                    player() == Player.BLACK) {
+                                if (board[recent.fromRow]
+                                        [recent.fromColumn].player()
+                                        == Player.WHITE) {
+                                    if (last.toRow - last.fromRow == 2
+                                            && last.fromColumn ==
+                                            last.toColumn) {
+                                        if (Math.abs(recent.toColumn -
+                                                recent.fromColumn) == 1
+                                                && recent.toRow -
+                                                recent.fromRow == -1) {
+                                            if (last.toColumn == recent
+                                                    .toColumn && recent
+                                                    .toRow - last.toRow
+                                                    == -1) {
+                                                valid = true;
+                                            }
+                                        }
+                                    }
+
+                                }
+                            } else if (board[last.toRow][last.toColumn]
+                                    .player() == Player.WHITE) {
+                                if (board[recent.fromRow]
+                                        [recent.fromColumn].player() ==
+                                        Player.BLACK) {
+                                    if (last.toRow - last.fromRow == -2
+                                            && last.fromColumn ==
+                                            last.toColumn) {
+                                        if (Math.abs(recent.toColumn -
+                                                recent.fromColumn) == 1
+                                                && recent.toRow -
+                                                recent.fromRow == 1) {
+                                            if (last.toColumn == recent
+                                                    .toColumn &&
+                                                    recent.toRow -
+                                                    last.toRow == 1) {
+                                                valid = true;
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return valid;
+    }
+
+    /******************************************************************
+     * A method that returns the current move.
+     *
+     * @Returns the current move
+     *****************************************************************/
+    public Move getCurrentMove() {
+        return currentMove;
+    }
+
+    /******************************************************************
+     * A method that returns the last move.
+     *
+     * @Returns the last move.
+     *****************************************************************/
+    public Move getLastMove() {
+        return lastMove;
     }
 }
 
