@@ -1,5 +1,12 @@
 package chess;
 
+/**********************************************************************
+ * A class that saves and loads states of the game.
+ *
+ * @author Logan Jaglowski, Sarah, and Lauren
+ * @version Winter 2019
+ *********************************************************************/
+
 import java.util.ArrayList;
 
 public class StateOfTheGame {
