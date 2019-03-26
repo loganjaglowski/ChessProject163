@@ -794,6 +794,17 @@ public class ChessModel implements IChessModel {
         }
         return false;
     }
+
+
+
+
+    public void removeFromBoard(int row, int col){
+        board[row][col] = null;
+    }
+
+
+
+
 }
 
 //end of class
