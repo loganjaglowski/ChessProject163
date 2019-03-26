@@ -1,5 +1,11 @@
 package chess;
 
+/**********************************************************************
+ * A class that determines the correct Bishop values.
+ *
+ * @author Logan Jaglowski, Sarah, and Lauren
+ * @version Winter 2019
+ *********************************************************************/
 public class Bishop extends ChessPiece {
 
     /*****************************************************************
