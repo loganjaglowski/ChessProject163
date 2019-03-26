@@ -155,6 +155,7 @@ public class ChessModel implements IChessModel {
 
         //uses polymorphic isValidMove() from super class
         if (board[move.fromRow][move.fromColumn] != null && move != null)
+        if (board[move.fromRow][move.fromColumn].player() == currentPlayer())
         if (board[move.fromRow][move.fromColumn].isValidMove(move,
                 board)){
 
