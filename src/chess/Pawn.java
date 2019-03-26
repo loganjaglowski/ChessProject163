@@ -1,15 +1,13 @@
 package chess;
 
+/**********************************************************************
+ * A class that determines the correct Bishop values.
+ *
+ * @author Logan Jaglowski, Sarah, and Lauren
+ * @version Winter 2019
+ *********************************************************************/
+
 public class Pawn extends ChessPiece {
-
-   public boolean hasDoneEnPassant = false;
-   public boolean hasCapturedEnpassant = false;
-   public int capturedRow;
-   public int capturedCol;
-
-    public boolean isHasDoneEnPassant() {
-        return hasDoneEnPassant;
-    }
 
     /******************************************************************
      * A method that calls the super class method.
@@ -41,14 +39,14 @@ public class Pawn extends ChessPiece {
         //checks super class method
         if (super.isValidMove(move, board)){
 
-            hasDoneEnPassant = false;
-
+            if (Math.abs(move.toRow - move.fromRow) > 2)
+                return false;
             //first if controls diagonal movement when capturing
             if (board[move.toRow][move.toColumn] != null) {
                 if ((board[move.toRow][move.toColumn]).player() !=
                         super.player()) {
-                    if (move.fromColumn - move.toColumn == 1 || move
-                            .fromColumn - move.toColumn == -1) {
+                    if (move.fromColumn - move.toColumn == 1 ||
+                            move.fromColumn - move.toColumn == -1) {
                         valid = true;
                     }else{
                         valid = false;
@@ -58,8 +56,8 @@ public class Pawn extends ChessPiece {
                     valid = false;
                 }
             }
-            if (move.fromColumn - move.toColumn != 0 && board[move.
-                    toRow][move.toColumn] == null)
+            if (move.fromColumn - move.toColumn != 0 &&
+                    board[move.toRow][move.toColumn] == null)
                 valid = false;
             if (super.player() == Player.BLACK) {
                 if (this.isEnPassant(move)) {
@@ -70,9 +68,10 @@ public class Pawn extends ChessPiece {
                     }else{
                         if (board[move.toRow][move.toColumn] != null){
                             valid = false;
-                        }else{
-                            hasDoneEnPassant = true;
                         }
+                        if (move.fromRow - move.toRow == -2 && board
+                            [move.toRow - 1][move.toColumn] != null)
+                            valid = false;
                     }
                 } else {
                     if (move.fromRow - move.toRow != -1) {
@@ -81,15 +80,16 @@ public class Pawn extends ChessPiece {
                 }
             }else{
                 if (this.isEnPassant(move)) {
-                    if (move.fromRow - move.toRow > 2 || move.fromRow -
-                            move.toRow < 1) {
+                    if (move.fromRow - move.toRow > 2 || move.fromRow
+                            - move.toRow < 1) {
                         valid = false;
                     }else{
                         if (board[move.toRow][move.toColumn] != null){
                             valid = false;
-                        }else{
-                            hasDoneEnPassant = true;
                         }
+                        if (move.fromRow - move.toRow == 2 && board
+                            [move.toRow + 1][move.toColumn] != null)
+                            valid = false;
                     }
                 } else {
                     if (move.fromRow - move.toRow != 1) {
@@ -97,48 +97,15 @@ public class Pawn extends ChessPiece {
                     }
                 }
             }
-            if ( move.fromColumn - move.toColumn == -1){
-                if (board[move.fromRow][move.toColumn] != null){
-                    if (board[move.fromRow][move.toColumn].type().
-                            equals("Pawn")){
-                        Pawn temp = (Pawn) board[move.fromRow]
-                                [move.toColumn];
-                        if ( temp.hasDoneEnPassant){
-                            hasCapturedEnpassant = true;
-                            capturedRow = move.fromRow;
-                            capturedCol = move.toColumn;
-                            valid = true;
-                        }
-                    }
-
-                }
-            }
-
-            if ( move.fromColumn - move.toColumn == 1) {
-                if (board[move.fromRow][move.toColumn] != null){
-                    if (board[move.fromRow][move.toColumn].type().
-                            equals("Pawn")){
-                        Pawn temp = (Pawn) board[move.fromRow]
-                                [move.toColumn];
-                        if ( temp.hasDoneEnPassant){
-                            hasCapturedEnpassant = true;
-                            capturedRow = move.fromRow;
-                            capturedCol = move.toColumn;
-                            valid = true;
-                        }
-                    }
-                }
-
-            }
         }else{
             valid = false;
         }
-        
+
         return valid;
     }
 
     /******************************************************************
-     * A helper method that determines if a pawn moved forward two.
+     * A helper method that determines which row it's in
      * @param move the attempted move
      * @return true if en passant and false if not.
      *****************************************************************/
@@ -154,6 +121,5 @@ public class Pawn extends ChessPiece {
         }
         return false;
     }
-}
 
-//end of class
+}
