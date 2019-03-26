@@ -59,6 +59,10 @@ public class ChessModel implements IChessModel {
 
     }
 
+    public void removeFromBoard(int row, int col){
+        board[row][col] = null;
+    }
+
     /******************************************************************
      * A method that returns whether the game is complete or not.
      * @return true if complete, false if incomplete.
@@ -66,11 +70,11 @@ public class ChessModel implements IChessModel {
     public boolean isComplete() {
         boolean valid = false;
         IChessPiece oldPiece;
-        if (inCheck(currentPlayer())) {
+        if (inCheck(Player.WHITE)) {
             valid = true;
             for (int x = 0; x < numRows(); x++) {
                 for (int y = 0; y < numColumns(); y++) {
-                    if (board[x][y] != null && board[x][y].player() == currentPlayer()) {
+                    if (board[x][y] != null && board[x][y].player() == Player.WHITE) {
                         for (int r = 0; r < numRows(); r++) {
                             for (int c = 0; c < numColumns(); c++) {
                                 Move m = new Move(x, y, r, c);
@@ -78,7 +82,33 @@ public class ChessModel implements IChessModel {
                                     oldPiece = board[m.toRow][m.toColumn];
                                     board[m.toRow][m.toColumn] = board[m.fromRow][m.fromColumn];
                                     board[m.fromRow][m.fromColumn] = null;
-                                    if(!inCheck(currentPlayer())) {
+                                    if(!inCheck(Player.WHITE)) {
+                                        board[m.fromRow][m.fromColumn] = board[m.toRow][m.toColumn];
+                                        board[m.toRow][m.toColumn] = oldPiece;
+                                        return false;
+                                    }
+                                    board[m.fromRow][m.fromColumn] = board[m.toRow][m.toColumn];
+                                    board[m.toRow][m.toColumn] = oldPiece;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (inCheck(Player.BLACK)) {
+            valid = true;
+            for (int x = 0; x < numRows(); x++) {
+                for (int y = 0; y < numColumns(); y++) {
+                    if (board[x][y] != null && board[x][y].player() == Player.BLACK) {
+                        for (int r = 0; r < numRows(); r++) {
+                            for (int c = 0; c < numColumns(); c++) {
+                                Move m = new Move(x, y, r, c);
+                                if (board[x][y].isValidMove(m, board)) {
+                                    oldPiece = board[m.toRow][m.toColumn];
+                                    board[m.toRow][m.toColumn] = board[m.fromRow][m.fromColumn];
+                                    board[m.fromRow][m.fromColumn] = null;
+                                    if(!inCheck(Player.BLACK)) {
                                         board[m.fromRow][m.fromColumn] = board[m.toRow][m.toColumn];
                                         board[m.toRow][m.toColumn] = oldPiece;
                                         return false;
@@ -130,7 +160,6 @@ public class ChessModel implements IChessModel {
 
             //temporary pieces to test check conditions, same as parameter
             IChessPiece toPiece = board[move.toRow][move.toColumn];
-            IChessPiece fromPiece = board[move.fromRow][move.fromColumn];
 
             //asks if player is in check, changes condition
             if(inCheck(player)) {
@@ -178,7 +207,7 @@ public class ChessModel implements IChessModel {
     public void setPlayer(Player p){
         player = p;
     }
-    
+
     /*****************************************************************
      * A method that determines whether either king is in check.
      * @param  p {@link chess.Move} the Player being checked
@@ -311,7 +340,7 @@ public class ChessModel implements IChessModel {
             }
         }
     }
-    
+
    /*****************************************************************
      * A method that creates an AI for the human player to fight.
      *****************************************************************/
@@ -328,6 +357,10 @@ public class ChessModel implements IChessModel {
             firstTurn = false;
             break moved;
         } else {
+            if (isComplete()) {
+                moved = true;
+                break;
+            }
             //get out of check
             if (this.inCheck(Player.BLACK)) {
                 //find  Black King
@@ -432,7 +465,7 @@ public class ChessModel implements IChessModel {
                                                 if ((board[r][c] == null || board[r][c].player() == Player.WHITE) && board[rb][cb] != null) {
                                                     Move m = new Move(rb, cb, r, c);
                                                     if (board[rb][cb].isValidMove(m, board)) {
-                                                        if (this.isDangerous(r, c) == false) {
+                                                        if (this.isDangerous(rb, cb) == false) {
                                                             saveLastMove(m);
                                                             if(!inCheck(Player.BLACK)) {
                                                                 moved = true;
@@ -450,7 +483,7 @@ public class ChessModel implements IChessModel {
                         }
                     }
 
-     
+
 
                     //find white King
                     int rwk = 0;
@@ -519,7 +552,7 @@ public class ChessModel implements IChessModel {
                                                     if (board[rw][cw].player() == Player.WHITE) {
                                                         Move move = new Move(rb, cb, rw, cw);
                                                         if (board[rb][cb].isValidMove(move, board)) {
-                                                            if (this.isDangerous(cw, rw) == false) {
+                                                            if (this.isDangerous(rw, cw) == false) {
                                                                 saveLastMove(move);
                                                                 if(!inCheck(Player.BLACK)) {
                                                                     moved = true;
@@ -544,7 +577,7 @@ public class ChessModel implements IChessModel {
                                                     if (board[rw][cw].player() == Player.WHITE) {
                                                         Move move = new Move(rb, cb, rw, cw);
                                                         if (board[rb][cb].isValidMove(move, board)) {
-                                                            if (this.isDangerous(cw, rw) == false) {
+                                                            if (this.isDangerous(rw, cw) == false) {
                                                                 saveLastMove(move);
                                                                 if (!inCheck(Player.BLACK)) {
                                                                     moved = true;
@@ -569,7 +602,7 @@ public class ChessModel implements IChessModel {
                                                     if (board[rw][cw].player() == Player.WHITE) {
                                                         Move move = new Move(rb, cb, rw, cw);
                                                         if (board[rb][cb].isValidMove(move, board)) {
-                                                            if (this.isDangerous(cw, rw) == false) {
+                                                            if (this.isDangerous(rw, cw) == false) {
                                                                 saveLastMove(move);
                                                                 if(!inCheck(Player.BLACK)) {
                                                                     moved = true;
@@ -794,17 +827,6 @@ public class ChessModel implements IChessModel {
         }
         return false;
     }
-
-
-
-
-    public void removeFromBoard(int row, int col){
-        board[row][col] = null;
-    }
-
-
-
-
 }
 
 //end of class
