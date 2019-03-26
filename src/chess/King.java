@@ -1,5 +1,12 @@
 package chess;
 
+/**********************************************************************
+ * A class that determines the correct King values.
+ *
+ * @author Logan Jaglowski, Sarah, and Lauren
+ * @version Winter 2019
+ *********************************************************************/
+
 public class King extends ChessPiece {
 
     /******************************************************************
@@ -34,10 +41,12 @@ public class King extends ChessPiece {
         if(super.isValidMove(move, board)){
 
             //castling
-            if (Math.abs(move.fromColumn - move.toColumn) == 2 && !moved){
+            if (Math.abs(move.fromColumn - move.toColumn) == 2 &&
+                    !moved){
                 //castling to the left
                 if (move.toColumn < move.fromColumn){
-                    if (move.toColumn - 2 >= 0 && move.fromColumn >= 0) {
+                    if (move.toColumn - 2 >= 0 && move.fromColumn >= 0)
+                    {
                         if (board[move.toRow][move.toColumn - 2] !=
                                 null && board[move.toRow][move.toColumn
                                 - 2].type().equals("Rook")) {
@@ -58,7 +67,8 @@ public class King extends ChessPiece {
                     //castling to the right
                 } else {
                     if (move.toColumn + 1 <= 7)
-                    if (board[move.toRow][move.toColumn + 1] != null) {
+                    if (board[move.toRow][move.toColumn + 1] != null)
+                    {
                         if (board[move.toRow][move.toColumn + 1].type()
                                 .equals("Rook")) {
                             Rook rook = (Rook) board[move.toRow]
