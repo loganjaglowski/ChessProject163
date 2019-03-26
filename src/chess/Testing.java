@@ -200,7 +200,8 @@ public class Testing {
     public void testSetPieceKing(){
         ChessModel test = new ChessModel();
         test.setPiece(1, 1, new King(Player.BLACK));
-        assertEquals(test.pieceAt(1, 1).type(), new King(Player.BLACK).type());
+        assertEquals(test.pieceAt(1, 1).type(), new King(Player.BLACK).
+                type());
     }
     //todo: test more pieces and board indexes
 
@@ -210,7 +211,8 @@ public class Testing {
         ChessModel test = new ChessModel();
         Move m = new Move(1, 1, 2, 1);
         test.move(m);
-        assertEquals(test.pieceAt(2, 1).type(), new Pawn(Player.BLACK).type());
+        assertEquals(test.pieceAt(2, 1).type(), new Pawn(Player.BLACK).
+                type());
     }
 
     //todo: adapt tests for altered isValidMove() method
@@ -335,7 +337,8 @@ public class Testing {
        // t.move(m);
         t.saveLastMove(m);
         t.undoLastMove(m);
-        assertEquals(t.pieceAt(m.fromRow, m.fromColumn).type(), new Knight(Player.BLACK).type());
+        assertEquals(t.pieceAt(m.fromRow, m.fromColumn).type(), new
+                Knight(Player.BLACK).type());
     }
 
     //tests setPlayer

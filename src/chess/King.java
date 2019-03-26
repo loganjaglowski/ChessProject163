@@ -38,14 +38,15 @@ public class King extends ChessPiece {
                 //castling to the left
                 if (move.toColumn < move.fromColumn){
                     if (move.toColumn - 2 >= 0 && move.fromColumn >= 0) {
-                        if (board[move.toRow][move.toColumn - 2] != null &&
-                                board[move.toRow][move.toColumn - 2].type()
-                                        .equals("Rook")) {
+                        if (board[move.toRow][move.toColumn - 2] !=
+                                null && board[move.toRow][move.toColumn
+                                - 2].type().equals("Rook")) {
                             Rook rook = (Rook) board[move.toRow]
                                     [move.toColumn - 2];
                             if (!rook.hasMoved()) {
                                 for (int i = 1; i < 4; i++) {
-                                    if (board[move.fromRow][move.fromColumn - i]
+                                    if (board[move.fromRow][move.
+                                            fromColumn - i]
                                             != null) {
                                         return false;
                                     }
@@ -64,8 +65,8 @@ public class King extends ChessPiece {
                                     [move.toColumn + 1];
                             if (!rook.hasMoved()) {
                                 for (int i = 1; i < 3; i++) {
-                                    if (board[move.fromRow][move.fromColumn + i]
-                                            != null) {
+                                    if (board[move.fromRow][move.
+                                            fromColumn + i] != null) {
                                         return false;
                                     }
                                 }
@@ -79,7 +80,7 @@ public class King extends ChessPiece {
                 if (move.toRow == move.fromRow - 1 &&
                         move.toColumn == move.fromColumn - 1) {
                     valid = true;
-                    //checks upper mid square, directly above current spot
+                    //checks upper mid square, directly above current
                 } else if (move.toRow == move.fromRow - 1 &&
                         move.toColumn == move.fromColumn) {
                     valid = true;

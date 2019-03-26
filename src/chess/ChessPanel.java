@@ -72,7 +72,8 @@ public class ChessPanel extends JPanel {
         listener = new listener();
         createIcons();
 
-        this.askForAI(); //generates message at start of game prompting the user for the number of players
+        this.askForAI(); //generates message at start of game prompting
+        // the user for the number of players
 
         JPanel boardpanel = new JPanel();
         JPanel buttonpanel = new JPanel();
@@ -276,8 +277,10 @@ public class ChessPanel extends JPanel {
         Object[] buttons = {"one player", "two players"};
 
         // this is the overloaded constructor of the JOptionPane, for custom buttons
-        int result = JOptionPane.showOptionDialog(null, "One player or two?", null,
-                JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, buttons, buttons[0]);
+        int result = JOptionPane.showOptionDialog(null, "One player or " +
+                        "two?", null,
+                JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, buttons, buttons[0]);
 
         if (result == JOptionPane.YES_OPTION){
             AIisActive = true;
@@ -307,15 +310,19 @@ public class ChessPanel extends JPanel {
 
                             //when move completes game
                             if(model.isValidMove(m).isComplete()){
-                                JOptionPane.showMessageDialog(null, "Game complete");
+                                JOptionPane.showMessageDialog(null,
+                                        "Game complete");
                             }
-                            //when move is into check fixme: how is move prevented?
+                            //when move is into check
                             if(model.isValidMove(m).isMovedIntoCheck()){
-                                JOptionPane.showMessageDialog(null, "Cannot move into check");
+                                JOptionPane.showMessageDialog(null,
+                                        "Cannot move into check");
                             }
                             //when move puts player into check
                             if(model.isValidMove(m).isInCheck()){
-                                JOptionPane.showMessageDialog(null, model.currentPlayer() + "is in check");
+                                JOptionPane.showMessageDialog(null,
+                                        model.currentPlayer() + "is in" +
+                                                " check");
                             }
                             //insert ifs and dialog boxes
                              if ((model.isValidMove(m).isMoveSuccessful())) {
@@ -325,10 +332,13 @@ public class ChessPanel extends JPanel {
                                     model.rookCastling(m);
                                     model.pawnPromoted(m);
                                     model.AI();
-                                    if (model.pieceAt(r, c).type().equals("Pawn")){
+                                    if (model.pieceAt(r, c).type().
+                                            equals("Pawn")){
                                         Pawn temp = (Pawn) model.pieceAt(r, c);
-                                        if (temp.hasCapturedEnpassant == true){
-                                            model.removeFromBoard(temp.capturedRow, temp.capturedCol);
+                                        if (temp.hasCapturedEnpassant){
+                                            model.removeFromBoard(temp.
+                                                    capturedRow, temp.
+                                                    capturedCol);
                                         }
                                     }
                                     displayBoard();
@@ -341,7 +351,8 @@ public class ChessPanel extends JPanel {
                                     displayBoard();
                                 }
                             }else{
-                                JOptionPane.showMessageDialog(null, "Move invalid");
+                                JOptionPane.showMessageDialog(null,
+                                        "Move invalid");
                             }
                         }
                     }
