@@ -413,7 +413,7 @@ public class Testing {
 
     //tests the checkmate
     @Test
-    public void testIsComplete() {
+    public void testWhiteIsComplete() {
         ChessModel test = new ChessModel();
         test.setPiece(0,0, null);
         test.setPiece(0, 1, null);
@@ -432,6 +432,30 @@ public class Testing {
         test.setPiece(1, 7, null);
         test.setPiece(1,0,new Queen(Player.WHITE));
         test.setPiece(0,1, new Queen(Player.WHITE));
+        assertTrue(test.isComplete());
+    }
+
+    //tests the checkmate
+    @Test
+    public void testBlackIsComplete() {
+        ChessModel test = new ChessModel();
+        test.setPiece(7,0, null);
+        test.setPiece(7, 1, null);
+        test.setPiece(7, 2, null);
+        test.setPiece(7, 3, null);
+        test.setPiece(7, 5, null);
+        test.setPiece(7, 6, null);
+        test.setPiece(7,7, null);
+        test.setPiece(6, 0, null);
+        test.setPiece(6, 1, null);
+        test.setPiece(6, 2, null);
+        test.setPiece(6, 3, null);
+        test.setPiece(6, 4, null);
+        test.setPiece(6, 5, null);
+        test.setPiece(6, 6, null);
+        test.setPiece(6, 7, null);
+        test.setPiece(7,0,new Queen(Player.BLACK));
+        test.setPiece(6,1, new Queen(Player.BLACK));
         assertTrue(test.isComplete());
     }
 
