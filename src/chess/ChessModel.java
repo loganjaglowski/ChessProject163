@@ -56,6 +56,7 @@ public class ChessModel implements IChessModel {
         board[1][5] = new Pawn(Player.BLACK);
         board[1][6] = new Pawn(Player.BLACK);
         board[1][7] = new Pawn(Player.BLACK);
+
     }
 
     /******************************************************************
@@ -65,28 +66,47 @@ public class ChessModel implements IChessModel {
     public boolean isComplete() {
         boolean valid = false;
         IChessPiece oldPiece;
-        if (inCheck(currentPlayer())) {
+        if (inCheck(Player.WHITE)) {
             valid = true;
             for (int x = 0; x < numRows(); x++) {
                 for (int y = 0; y < numColumns(); y++) {
-                    if (board[x][y] != null && board[x][y].player() ==
-                            currentPlayer()) {
+                    if (board[x][y] != null && board[x][y].player() == Player.WHITE) {
                         for (int r = 0; r < numRows(); r++) {
                             for (int c = 0; c < numColumns(); c++) {
                                 Move m = new Move(x, y, r, c);
-                                if (board[x][y].isValidMove(m, board)){
-                                    oldPiece = board[m.toRow]
-                                            [m.toColumn];
-                                    board[m.toRow][m.toColumn] = board
-                                            [m.fromRow][m.fromColumn];
-                                    board[m.fromRow][m.fromColumn] =
-                                            null;
-                                    if(!inCheck(currentPlayer())) {
-                                        board[m.fromRow][m.fromColumn]
-                                                = board[m.toRow][m.
-                                                toColumn];
-                                        board[m.toRow][m.toColumn] =
-                                                oldPiece;
+                                if (board[x][y].isValidMove(m, board)) {
+                                    oldPiece = board[m.toRow][m.toColumn];
+                                    board[m.toRow][m.toColumn] = board[m.fromRow][m.fromColumn];
+                                    board[m.fromRow][m.fromColumn] = null;
+                                    if(!inCheck(Player.WHITE)) {
+                                        board[m.fromRow][m.fromColumn] = board[m.toRow][m.toColumn];
+                                        board[m.toRow][m.toColumn] = oldPiece;
+                                        return false;
+                                    }
+                                    board[m.fromRow][m.fromColumn] = board[m.toRow][m.toColumn];
+                                    board[m.toRow][m.toColumn] = oldPiece;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (inCheck(Player.BLACK)) {
+            valid = true;
+            for (int x = 0; x < numRows(); x++) {
+                for (int y = 0; y < numColumns(); y++) {
+                    if (board[x][y] != null && board[x][y].player() == Player.BLACK) {
+                        for (int r = 0; r < numRows(); r++) {
+                            for (int c = 0; c < numColumns(); c++) {
+                                Move m = new Move(x, y, r, c);
+                                if (board[x][y].isValidMove(m, board)) {
+                                    oldPiece = board[m.toRow][m.toColumn];
+                                    board[m.toRow][m.toColumn] = board[m.fromRow][m.fromColumn];
+                                    board[m.fromRow][m.fromColumn] = null;
+                                    if(!inCheck(Player.BLACK)) {
+                                        board[m.fromRow][m.fromColumn] = board[m.toRow][m.toColumn];
+                                        board[m.toRow][m.toColumn] = oldPiece;
                                         return false;
                                     }
                                     board[m.fromRow][m.fromColumn] =
@@ -132,13 +152,13 @@ public class ChessModel implements IChessModel {
         GameStatus status = new GameStatus();
 
         //uses polymorphic isValidMove() from super class
-        if (board[move.fromRow][move.fromColumn] != null && move!=null)
+        if (board[move.fromRow][move.fromColumn] != null && move != null)
+        if (board[move.fromRow][move.fromColumn].player() == currentPlayer())
         if (board[move.fromRow][move.fromColumn].isValidMove(move,
                 board)){
 
             //temporary pieces to test check conditions, same as param
             IChessPiece toPiece = board[move.toRow][move.toColumn];
-            IChessPiece fromPiece = board[move.fromRow][move.fromColumn];
 
             //asks if player is in check, changes condition
             if(inCheck(player)) {
@@ -321,7 +341,7 @@ public class ChessModel implements IChessModel {
         }
     }
     
-   /*******************************************************************
+   /*****************************************************************
      * A method that creates an AI for the human player to fight.
      *****************************************************************/
     public void AI() {
@@ -338,6 +358,10 @@ public class ChessModel implements IChessModel {
             firstTurn = false;
             break moved;
         } else {
+            if (isComplete()) {
+                moved = true;
+                break;
+            }
             //get out of check
             if (this.inCheck(Player.BLACK)) {
                 //find  Black King
@@ -475,27 +499,13 @@ public class ChessModel implements IChessModel {
                                             for (int c = 0; c < 8;c++){
                                                 if (moved)
                                                     break;
-                                                if ((board[r][c] ==null
-                                                        || board[r][c].
-                                                        player() ==
-                                                        Player.WHITE)
-                                                        && board[rb]
-                                                        [cb] != null) {
-                                                    Move m = new Move
-                                                            (rb, cb, r,
-                                                                    c);
-                                                    if (board[rb][cb].
-                                                        isValidMove
-                                                           (m, board)){
-                                                       if (!this.
-                                                       isDangerous(r,
-                                                                c)) {
-                                                       saveLastMove(m);
-                                                            if(!inCheck
-                                                              (Player.
-                                                               BLACK)){
-                                                                moved =
-                                                                  true;
+                                                if ((board[r][c] == null || board[r][c].player() == Player.WHITE) && board[rb][cb] != null) {
+                                                    Move m = new Move(rb, cb, r, c);
+                                                    if (board[rb][cb].isValidMove(m, board)) {
+                                                        if (this.isDangerous(rb, cb) == false) {
+                                                            saveLastMove(m);
+                                                            if(!inCheck(Player.BLACK)) {
+                                                                moved = true;
                                                                 break;
                                                        }
                                                        undoLastMove(m);
@@ -540,6 +550,7 @@ public class ChessModel implements IChessModel {
                             }
                         }
                     }
+
                     //attempt to capture the white king
                     for (int rb = 0; rb < 8; rb++) {
                         if (moved)
@@ -647,7 +658,7 @@ public class ChessModel implements IChessModel {
                                                         (move, board)){
                                                           if(this.
                                                           isDangerous
-                                                          (cw, rw) ==
+                                                          (rw, cw) ==
                                                           false){
                                                           saveLastMove
                                                            (move);
@@ -688,7 +699,7 @@ public class ChessModel implements IChessModel {
                                                          (move,board)){
                                                           if(!this.
                                                            isDangerous
-                                                           (cw,rw)){
+                                                           (rw,cw)){
                                                            saveLastMove
                                                            (move);
                                                             if(!inCheck
