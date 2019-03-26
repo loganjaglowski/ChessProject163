@@ -4,6 +4,14 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+/**********************************************************************
+ * A class that provides the panel for the chess game so that the user
+ * can see.
+ *
+ * @author Logan Jaglowski, Sarah, and Lauren
+ * @version Winter 2019
+ *********************************************************************/
+
 public class ChessPanel extends JPanel {
 
     /** Used for saving and loading games */
@@ -89,7 +97,7 @@ public class ChessPanel extends JPanel {
                     board[r][c].addActionListener(listener);
                 } else if(model.pieceAt(r, c).player() == Player.WHITE)
                     placeWhitePieces(r, c);
-                  else if(model.pieceAt(r, c).player() == Player.BLACK)
+                else if(model.pieceAt(r, c).player() == Player.BLACK)
                     placeBlackPieces(r, c);
 
                 setBackGroundColor(r, c);
@@ -225,46 +233,46 @@ public class ChessPanel extends JPanel {
                 if (model.pieceAt(r, c) == null)
                     board[r][c].setIcon(null);
                 else{
-                if (model.pieceAt(r, c).player() == Player.WHITE) {
-                    if (model.pieceAt(r, c).type().equals("Pawn"))
-                        board[r][c].setIcon(wPawn);
+                    if (model.pieceAt(r, c).player() == Player.WHITE) {
+                        if (model.pieceAt(r, c).type().equals("Pawn"))
+                            board[r][c].setIcon(wPawn);
 
-                    if (model.pieceAt(r, c).type().equals("Rook"))
-                        board[r][c].setIcon(wRook);
+                        if (model.pieceAt(r, c).type().equals("Rook"))
+                            board[r][c].setIcon(wRook);
 
                     if (model.pieceAt(r, c).type().equals("Knight"))
-                        board[r][c].setIcon(wKnight);
+                            board[r][c].setIcon(wKnight);
 
                     if (model.pieceAt(r, c).type().equals("Bishop"))
-                        board[r][c].setIcon(wBishop);
+                            board[r][c].setIcon(wBishop);
 
-                    if (model.pieceAt(r, c).type().equals("Queen"))
-                        board[r][c].setIcon(wQueen);
+                        if (model.pieceAt(r, c).type().equals("Queen"))
+                            board[r][c].setIcon(wQueen);
 
-                    if (model.pieceAt(r, c).type().equals("King"))
-                        board[r][c].setIcon(wKing);
+                        if (model.pieceAt(r, c).type().equals("King"))
+                            board[r][c].setIcon(wKing);
 
-                }
+                    }
                 if (model.pieceAt(r, c).player() == Player.BLACK) {
                     if (model.pieceAt(r, c).type().equals("Pawn"))
-                        board[r][c].setIcon(bPawn);
+                            board[r][c].setIcon(bPawn);
 
                     if (model.pieceAt(r, c).type().equals("Rook"))
-                        board[r][c].setIcon(bRook);
+                            board[r][c].setIcon(bRook);
 
                     if (model.pieceAt(r, c).type().equals("Knight"))
-                        board[r][c].setIcon(bKnight);
+                            board[r][c].setIcon(bKnight);
 
                     if (model.pieceAt(r, c).type().equals("Bishop"))
-                        board[r][c].setIcon(bBishop);
+                            board[r][c].setIcon(bBishop);
 
-                    if (model.pieceAt(r, c).type().equals("Queen"))
-                        board[r][c].setIcon(bQueen);
+                        if (model.pieceAt(r, c).type().equals("Queen"))
+                            board[r][c].setIcon(bQueen);
 
-                    if (model.pieceAt(r, c).type().equals("King"))
-                        board[r][c].setIcon(bKing);
+                        if (model.pieceAt(r, c).type().equals("King"))
+                            board[r][c].setIcon(bKing);
+                    }
                 }
-            }
         }
 
         currentPlayerLabel.setText("Current player: " + model.
@@ -311,41 +319,42 @@ public class ChessPanel extends JPanel {
                             firstTurnFlag = true;
                             Move m = new Move(fromRow, fromCol, toRow,
                                     toCol);
-
+                            model.setCurrentMove(m);
 
                             //when move completes game
-                            if(model.isComplete()){
+                            if (model.isComplete()) {
                                 break;
                             }
                             //when move is into check
-                            if(model.isValidMove(m).isMovedIntoCheck()){
+                            if (model.isValidMove(m).isMovedIntoCheck()) {
                                 JOptionPane.showMessageDialog(null,
                                         "Cannot move into check");
                             }
                             //when move puts player into check
-                            if(model.isValidMove(m).isInCheck()){
+                            if (model.isValidMove(m).isInCheck()) {
                                 JOptionPane.showMessageDialog(null,
                                         model.currentPlayer() +
                                                 " is in check");
                             }
 
                             //insert ifs and dialog boxes
-                             if ((model.isValidMove(m).isMoveSuccessful())) {
+                            if ((model.isValidMove(m)
+                                    .isMoveSuccessful())) {
                                 if (AIisActive) {
                                     state.saveState(model);
+                                    if (model.isEnPassant(model.
+                                            getCurrentMove(), model.
+                                            getLastMove())) {
+                                        model.removeFromBoard(model.
+                                                getLastMove().toRow,
+                                                model.getLastMove().
+                                                        toColumn);
+                                    }
                                     model.move(m);
+                                    model.setLastMove(m);
                                     model.rookCastling(m);
                                     model.pawnPromoted(m);
-                                    if (model.pieceAt(r, c).type().
-                                            equals("Pawn")){
-                                        Pawn temp = (Pawn) model.pieceAt(r, c);
-                                        if (temp.hasCapturedEnpassant){
-                                            model.removeFromBoard(temp.
-                                                    capturedRow, temp.
-                                                    capturedCol);
-                                        }
-                                    }
-                                    if(model.isComplete()){
+                                    if (model.isComplete()) {
                                         JOptionPane.showMessageDialog(
                                                 null, "Checkmate!");
                                     } else if (model.inCheck(Player.BLACK)) {
@@ -354,25 +363,26 @@ public class ChessPanel extends JPanel {
                                                         " is in check");
                                     }
                                     model.AI();
+                                    model.setLastMove(m);
                                     displayBoard();
-                                }else{
+                                } else {
                                     state.saveState(model);
+                                    if (model.isEnPassant(model.
+                                            getCurrentMove(), model.
+                                            getLastMove())) {
+                                        model.removeFromBoard(model.
+                                                getLastMove().toRow,
+                                                model.getLastMove().
+                                                        toColumn);
+                                    }
                                     model.move(m);
+                                    model.setLastMove(m);
                                     model.rookCastling(m);
                                     model.pawnPromoted(m);
                                     model.setNextPlayer();
-                                    if (model.pieceAt(r, c).type().
-                                            equals("Pawn")){
-                                        Pawn temp = (Pawn) model.pieceAt(r, c);
-                                        if (temp.hasCapturedEnpassant){
-                                            model.removeFromBoard(temp.
-                                                    capturedRow, temp.
-                                                    capturedCol);
-                                        }
-                                    }
                                     displayBoard();
                                 }
-                            }else{
+                            } else {
                                 JOptionPane.showMessageDialog(null,
                                         "Move invalid");
                             }
@@ -380,8 +390,7 @@ public class ChessPanel extends JPanel {
                     }
                 }
             }
-            //if undo button was clicked
-            if(undoBtn == event.getSource()){
+            if (undoBtn == event.getSource()) {
                 model = state.loadState();
                 if (!state.checkIfBeginningModel())
                     state.incrementState();
@@ -389,6 +398,4 @@ public class ChessPanel extends JPanel {
             }
         }
     }
-}
-
-//end of class
+    }
