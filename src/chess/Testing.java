@@ -1,6 +1,5 @@
 package chess;
 
-import com.sun.source.tree.AssertTree;
 import org.junit.Test;
 import static org.junit.Assert.*;
 public class Testing {
@@ -221,7 +220,6 @@ public class Testing {
         assertEquals(test.pieceAt(1, 1).type(),
                 new King(Player.BLACK).type());
     }
-    //todo: test more pieces and board indexes
 
     //tests normal move
     @Test
@@ -232,8 +230,6 @@ public class Testing {
         assertEquals(test.pieceAt(2, 1).type(),
                 new Pawn(Player.BLACK).type());
     }
-
-    //todo: adapt tests for altered isValidMove() method
 
     //tests move that lands on own piece
     @Test
@@ -299,8 +295,6 @@ public class Testing {
         ChessModel test = new ChessModel();
         assertFalse(test.isComplete());
     }
-
-    //todo: test isComplete() when game is complete
 
     //tests inCheck() when king is in checkmate
     @Test
@@ -372,11 +366,14 @@ public class Testing {
     @Test
     public void castlingTest() {
         ChessModel t = new ChessModel();
+        //removes obstructive pieces
         t.setPiece(7, 5, null);
         t.setPiece(7, 6, null);
+        //moves the king and calls the castling method
         Move king = new Move(7, 4, 7, 6);
         t.move(king);
         t.rookCastling(king);
+        //checks that aim squares are now rook and king
         assertTrue(t.pieceAt(7, 5).type().equals("Rook"));
         assertTrue(t.pieceAt(7, 6).type().equals("King"));
     }
