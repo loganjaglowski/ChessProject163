@@ -130,10 +130,10 @@ public class ChessPanel extends JPanel {
      *****************************************************************/
     private void setBackGroundColor(int r, int c) {
         if ((c % 2 == 1 && r % 2 == 0) || (c % 2 == 0 && r % 2 == 1)) {
-            board[r][c].setBackground(Color.pink);
+            board[r][c].setBackground(new Color(250, 236, 36));
         } else if((c % 2 == 0 && r % 2 == 0) || (c % 2 == 1 && r % 2
                 == 1)) {
-            board[r][c].setBackground(Color.WHITE);
+            board[r][c].setBackground(new Color(125, 84, 51));
         }
     }
 
@@ -294,11 +294,7 @@ public class ChessPanel extends JPanel {
                 JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, buttons, buttons[0]);
 
-        if (result == JOptionPane.YES_OPTION){
-            AIisActive = true;
-        }else{
-            AIisActive = false;
-        }
+        AIisActive = result == JOptionPane.YES_OPTION;
     }
 
 

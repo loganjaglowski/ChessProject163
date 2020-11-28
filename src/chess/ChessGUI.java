@@ -9,6 +9,8 @@ public class ChessGUI {
     /*****************************************************************
      * A main method that displays the chess board and pieces.
      * @param args arguments
+     * @author Logan Jaglowski, Sarah, and Lauren
+     * Winter 2019
      *****************************************************************/
     public static void main(String[] args) {
         JFrame frame = new JFrame("Chess Game");
